@@ -25,17 +25,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        replaceFragment(new home_screen());
 
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
-            switch (item.getItemId()){
-                case R.id.home_screen:
-                    break;
-                case R.id.fav_screen:
-                    break;
-                case R.id.history_screen:
-                    break;
-                case R.id.account_screen:
-                    break;
+            int itemId = item.getItemId();
+
+            if (itemId == R.id.home_screen) {
+                replaceFragment(new home_screen());
+                // Handle home screen
+            } else if (itemId == R.id.fav_screen) {
+                replaceFragment(new fav_screen());
+                // Handle favorites screen
+            } else if (itemId == R.id.history_screen) {
+                replaceFragment(new history_screen());
+                // Handle history screen
+            } else if (itemId == R.id.account_screen) {
+                replaceFragment(new account_screen());
+                // Handle account screen
             }
 
             return true;
@@ -45,8 +51,9 @@ public class MainActivity extends AppCompatActivity {
     private void replaceFragment(Fragment fragment){
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        FragmentTransaction.replace(R.id.frame_layout)
-    }
+        fragmentTransaction.replace(R.id.frame_layout,fragment);
+        fragmentTransaction.commit();
 
+    }
 
 }
