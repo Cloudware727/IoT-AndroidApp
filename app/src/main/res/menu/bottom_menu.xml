@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/home_screen" android:title="Home" android:icon="@drawable/icon_home" />
+    <item android:id="@+id/fav_screen" android:title="Favourites" android:icon="@drawable/icon_fav" />
+    <item android:id="@+id/history_screen" android:title="History" android:icon="@drawable/icon_history" />
+    <item android:id="@+id/account_screen" android:title="Account" android:icon="@drawable/icon_account" />
+</menu>
