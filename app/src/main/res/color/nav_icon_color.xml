@@ -1,0 +1,7 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Color when the item is selected -->
+    <item android:color="@color/dark_blue" android:state_checked="true"/>
+
+    <!-- Color when the item is unselected -->
+    <item android:color="#A0A0A0"/>
+</selector>
