@@ -9,6 +9,15 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/coffeeSelect"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:clipToPadding="false"
+        android:paddingHorizontal="60dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
     <FrameLayout
         android:id="@+id/frame_layout"
         android:layout_width="0dp"
