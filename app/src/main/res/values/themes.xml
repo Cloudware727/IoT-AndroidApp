@@ -2,8 +2,10 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.IoT_Android_App" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">#572B0F</item>  <!-- Dark Coffee Color -->
+        <item name="colorOnPrimary">#FFFFFF</item>  <!-- Text on primary color -->
+        <item name="colorSurface">#572B0F</item>  <!-- Ensures buttons use correct color -->
     </style>
 
-    <style name="Theme.IoT_Android_App" parent="Base.Theme.IoT_Android_App" />
+    <style name="Theme.IoT_Android_App" parent="Base.Theme.IoT_Android_App"/>
 </resources>
