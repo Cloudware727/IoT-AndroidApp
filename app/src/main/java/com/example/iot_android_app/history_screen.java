@@ -1,5 +1,6 @@
 package com.example.iot_android_app;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,6 +8,12 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -58,7 +65,16 @@ public class history_screen extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_history_screen, container, false);
+        View view = inflater.inflate(R.layout.fragment_history_screen, container, false);
+        ListView listView = view.findViewById(R.id.history_list);
+        DBHandler db = new DBHandler();
+        // TODO: use username global parameter
+        String user = "ArnoJanssens";
+        String response = db.makeGETRequest("https://studev.groept.be/api/a24ib2team102/get_history_for_user/" + user);
+        //List<String> items = new ArrayList<>(Arrays.asList(db.getHistory(response)));
+        //ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
+        //        android.R.layout.simple_list_item_1, items);
+        //listView.setAdapter(adapter);
+        return view;
     }
 }
