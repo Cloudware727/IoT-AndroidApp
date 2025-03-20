@@ -239,7 +239,6 @@
             android:layout_gravity="center"
             android:valueFrom="0"
             android:valueTo="30"
-            android:stepSize="1"
             android:value="10"
             app:thumbColor="@color/coffee_brown"
             app:trackColor="@color/slider_track"
