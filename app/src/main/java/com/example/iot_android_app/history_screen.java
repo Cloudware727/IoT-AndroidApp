@@ -71,67 +71,7 @@ public class history_screen extends Fragment {
         items = new ArrayList<>();
         // TODO: use username global parameter
         String user = "ArnoJanssens";
-        db.makeGETRequest("https://studev.groept.be/api/a24ib2team102/get_history_for_user/"
-                + user, new DBHandler.DBResponseCallback() {
-            @Override
-            public void onSuccess(String response) {
-                Log.d("Response", response);
 
-                // You can call getHistory inside a background thread
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Pass the response and the callback
-                        db.getHistory(response, new DBHandler.DBResponseCallback() {
-                            @Override
-                            public void onSuccess(String response) {}
-
-                            @Override
-                            public void onSuccess(String[] history) {
-                                // Once you get the history data back, update the UI on the main thread
-                                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (history != null) {
-                                            for (String str : history) {
-                                                items.add(new ItemModel(str));
-                                            }
-                                            // Notify adapter that the data has changed
-                                            adapter.notifyDataSetChanged();
-                                        }
-                                    }
-                                });
-                            }
-                            @Override
-                            public void onError(String error) {
-                                Log.e("Error", "Error fetching history: " + error);
-                            }
-                        });
-                    }
-                }).start();
-            }
-
-            @Override
-            public void onSuccess(String[] data) {}
-
-            @Override
-            public void onError(String error) {
-                Log.e("Error", error);
-            }
-        });
-        //List<String> items = new ArrayList<>(Arrays.asList(db.getHistory(response)));
-        //for (int i = 0; i < 5; i++) {
-        //    items.add(new ItemModel("19/03 12:05 - herbal tea x2 (sugar: 1) (T: 90)"));
-        //    items.add(new ItemModel("19/03 12:51 - herbal tea x2 (sugar: 1) (T: 90)"));
-        //    items.add(new ItemModel("20/03 17:02 - lemon tea x3 (sugar: 0) (T: 95)"));
-        //}
-        adapter = new ItemAdapter(items, new ItemAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                String clickedItem = items.get(position).getText();
-                Toast.makeText(getContext(), "Clicked on: " + clickedItem, Toast.LENGTH_SHORT).show();
-            }
-        });
         historyList.setAdapter(adapter);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(historyList.getContext(),
                 DividerItemDecoration.VERTICAL);

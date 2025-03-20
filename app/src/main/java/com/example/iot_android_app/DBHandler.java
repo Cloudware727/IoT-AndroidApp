@@ -48,8 +48,8 @@ public class DBHandler {
             {
                 JSONObject curObject = array.getJSONObject(i);
                 if (k=='S'){
-                    s += curObject.getString("coffeeName") +",";
-                    s += curObject.getInt("coffeeLevel") +",";
+                    s += curObject.getString("name") +",";
+                    s += curObject.getInt("level") +",";
                 }
 
             }
