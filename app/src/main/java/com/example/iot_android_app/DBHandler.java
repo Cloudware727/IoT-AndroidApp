@@ -1,13 +1,29 @@
 package com.example.iot_android_app;
 
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.*;
-
-import org.json.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class DBHandler {
+    public String getDrinkById(int id) {
+        return makeGETRequest("https://studev.groept.be/api/a24ib2team102/get_drink_by_id/" + id);
+    }
+
+    private String SignUpUrl = "https://studev.groept.be/api/a24ib2team102/SignUpAppChecker/";
+
+    public String signUpUser(String username, String email, String password) {
+        String requestUrl = SignUpUrl + "?username=" + username + "&email=" + email + "&password=" + password;
+        Log.d("SignUpRequest", "Request URL: " + requestUrl);
+        return makeGETRequest(requestUrl);
+    }
 
     public String makeGETRequest(String urlName){
         BufferedReader rd = null;
@@ -22,44 +38,35 @@ public class DBHandler {
             sb = new StringBuilder();
             while ((line = rd.readLine()) != null)
             {
-                sb.append(line + '\n');
+                sb.append(line).append('\n');
             }
             conn.disconnect();
             return sb.toString();
-        }
-        catch (MalformedURLException e){
-            e.printStackTrace();
-        }
-        catch (ProtocolException e){
-            e.printStackTrace();
         }
         catch (IOException e){
             e.printStackTrace();
         }
         return "";
-
     }
 
-    public String parseJSON(String jsonString, char k){
-        String s = "";
+    public String[] getHistory(String jsonString) {
         try {
             JSONArray array = new JSONArray(jsonString);
-            for (int i = 0; i < array.length(); i++)
-            {
-                JSONObject curObject = array.getJSONObject(i);
-                if (k=='S'){
-                    s += curObject.getString("name") +",";
-                    s += curObject.getInt("level") +",";
-                }
-
-            }
+            String[] res = new String[array.length()];
+            //for (int i = 0; i < array.length(); i++) {
+            //    JSONObject curObject = array.getJSONObject(i);
+            //    int id = curObject.getInt("drink_id");
+            //    JSONObject drink_info = new JSONObject(getDrinkById(id));
+            //    res[i] = curObject.getString("time") + " - " + drink_info.getString("Type")
+            //            + " x" + drink_info.getInt("Strength") + " (sugar: " +
+            //            drink_info.getInt("Sugar") + ") (T: " +
+            //            drink_info.getInt("Temperature") + ")";
+            //}
+            return res;
         }
         catch (JSONException e){
             e.printStackTrace();
         }
-        return s;
+        return null;
     }
-
 }
-
-
