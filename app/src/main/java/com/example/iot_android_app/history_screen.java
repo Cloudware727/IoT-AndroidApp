@@ -1,15 +1,25 @@
 package com.example.iot_android_app;
 
-import android.content.Context;
 import android.os.Bundle;
 
-import androidx.fragment.app.Fragment;
+import androidx.core.content.ContextCompat;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.Handler;
+import android.os.Looper;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,15 +31,9 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class history_screen extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private RecyclerView historyList;
+    private ItemAdapter adapter;
+    private List<ItemModel> items;
 
     public history_screen() {
         // Required empty public constructor
@@ -47,8 +51,6 @@ public class history_screen extends Fragment {
     public static history_screen newInstance(String param1, String param2) {
         history_screen fragment = new history_screen();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,25 +58,151 @@ public class history_screen extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_history_screen, container, false);
-        ListView listView = view.findViewById(R.id.history_list);
+        historyList = view.findViewById(R.id.historyList);
+        historyList.setLayoutManager(new LinearLayoutManager(getContext()));
+
         DBHandler db = new DBHandler();
+        items = new ArrayList<>();
         // TODO: use username global parameter
         String user = "ArnoJanssens";
-        String response = db.makeGETRequest("https://studev.groept.be/api/a24ib2team102/get_history_for_user/" + user);
+        db.makeGETRequest("https://studev.groept.be/api/a24ib2team102/get_history_for_user/"
+                + user, new DBHandler.DBResponseCallback() {
+            @Override
+            public void onSuccess(String response) {
+                Log.d("Response", response);
+
+                // You can call getHistory inside a background thread
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Pass the response and the callback
+                        db.getHistory(response, new DBHandler.DBResponseCallback() {
+                            @Override
+                            public void onSuccess(String response) {}
+
+                            @Override
+                            public void onSuccess(String[] history) {
+                                // Once you get the history data back, update the UI on the main thread
+                                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (history != null) {
+                                            for (String str : history) {
+                                                items.add(new ItemModel(str));
+                                            }
+                                            // Notify adapter that the data has changed
+                                            adapter.notifyDataSetChanged();
+                                        }
+                                    }
+                                });
+                            }
+                            @Override
+                            public void onError(String error) {
+                                Log.e("Error", "Error fetching history: " + error);
+                            }
+                        });
+                    }
+                }).start();
+            }
+
+            @Override
+            public void onSuccess(String[] data) {}
+
+            @Override
+            public void onError(String error) {
+                Log.e("Error", error);
+            }
+        });
         //List<String> items = new ArrayList<>(Arrays.asList(db.getHistory(response)));
-        //ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
-        //        android.R.layout.simple_list_item_1, items);
-        //listView.setAdapter(adapter);
+        //for (int i = 0; i < 5; i++) {
+        //    items.add(new ItemModel("19/03 12:05 - herbal tea x2 (sugar: 1) (T: 90)"));
+        //    items.add(new ItemModel("19/03 12:51 - herbal tea x2 (sugar: 1) (T: 90)"));
+        //    items.add(new ItemModel("20/03 17:02 - lemon tea x3 (sugar: 0) (T: 95)"));
+        //}
+        adapter = new ItemAdapter(items, new ItemAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                String clickedItem = items.get(position).getText();
+                Toast.makeText(getContext(), "Clicked on: " + clickedItem, Toast.LENGTH_SHORT).show();
+            }
+        });
+        historyList.setAdapter(adapter);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(historyList.getContext(),
+                DividerItemDecoration.VERTICAL);
+        dividerItemDecoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.divider));
+        historyList.addItemDecoration(dividerItemDecoration);
         return view;
+    }
+
+    private class ItemModel {
+        private String text;
+
+        public ItemModel(String text) {
+            this.text = text;
+        }
+
+        public String getText() {
+            return text;
+        }
+    }
+
+    public static class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder> {
+
+        private List<ItemModel> itemList;
+        private OnItemClickListener listener;
+
+        public interface OnItemClickListener {
+            void onItemClick(View view, int position);
+        }
+
+        public ItemAdapter(List<ItemModel> itemList, OnItemClickListener listener) {
+            this.itemList = itemList;
+            this.listener = listener;
+        }
+
+        @NonNull
+        @Override
+        public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.list_item, parent, false);
+            return new ItemViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
+            String text = itemList.get(position).getText();
+
+            TextView textView = holder.textView;
+            textView.setText(text);
+            textView.setMaxLines(2);
+            textView.setEllipsize(TextUtils.TruncateAt.END);
+        }
+
+        @Override
+        public int getItemCount() {
+            return itemList.size();
+        }
+
+        public class ItemViewHolder extends RecyclerView.ViewHolder {
+            TextView textView;
+
+            public ItemViewHolder(View itemView) {
+                super(itemView);
+                textView = itemView.findViewById(R.id.pastDrink); // Get reference to TextView
+
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        listener.onItemClick(v, getAdapterPosition());
+                    }
+                });
+            }
+        }
     }
 }
