@@ -40,6 +40,10 @@ public class LoggedInFragment extends Fragment {
         btnLogout.setOnClickListener(v -> {
             Toast.makeText(getActivity(), "Logged Out!", Toast.LENGTH_SHORT).show();
 
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.clear();
+            editor.apply();
+
             // Navigate back to login screen
             account_screen loginFragment = new account_screen();
             FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
