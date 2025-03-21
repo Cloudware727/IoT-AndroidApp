@@ -82,7 +82,6 @@ public class history_screen extends Fragment {
         adapter = new ItemAdapter(items, new ItemAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                String clickedItem = items.get(position).getText();
                 Toast.makeText(getContext(), "Added to favourites", Toast.LENGTH_SHORT).show();
             }
         });
@@ -93,7 +92,7 @@ public class history_screen extends Fragment {
                 JSONArray array = new JSONArray(historyJSON);
                 for (int i = 0; i < array.length(); i++) {
                     JSONObject curObject = array.getJSONObject(i);
-                    String date = curObject.get("orderTime").toString();
+                    String date = curObject.get("orderTime").toString().substring(5, 16);
                     orders.add(date + " - " +
                             curObject.getString("type") + " x" +
                             curObject.getInt("strength") + " (sugar: " +
