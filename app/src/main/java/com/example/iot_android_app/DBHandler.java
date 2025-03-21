@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class DBHandler {
@@ -27,7 +28,7 @@ public class DBHandler {
     private String sendOrderMachineUrl = "https://studev.groept.be/api/a24ib2team102/send_order_machine/";
     private String sendFavouriteUrl = "https://studev.groept.be/api/a24ib2team102/add_to_fav/";
     private String getNameLevelUrl = "https://studev.groept.be/api/a24ib2team102/get_name_level";
-
+    private String getHistoryUrl = "https://studev.groept.be/api/a24ib2team102/get_history_for_user/";
 
     public String signUpUser(String username, String email, String password) {
         String requestUrl = SignUpUrl + "?username=" + username + "&password=" + password + "&email=" + email ;
@@ -59,6 +60,29 @@ public class DBHandler {
         return makeGETRequest(getNameLevelUrl);
     }
 
+    public String getHistory(String user) {
+        String url = getHistoryUrl + user;
+        return makeGETRequest(url);
+        /*try {
+            JSONArray array = new JSONArray(jsonString);
+            String[] res = new String[array.length()];
+            //for (int i = 0; i < array.length(); i++) {
+            //    JSONObject curObject = array.getJSONObject(i);
+            //    int id = curObject.getInt("drink_id");
+            //    JSONObject drink_info = new JSONObject(getDrinkById(id));
+            //    res[i] = curObject.getString("time") + " - " + drink_info.getString("Type")
+            //            + " x" + drink_info.getInt("Strength") + " (sugar: " +
+            //            drink_info.getInt("Sugar") + ") (T: " +
+            //            drink_info.getInt("Temperature") + ")";
+            //}
+            return res;
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+        }
+        return null;*/
+    }
+
     public String makeGETRequest(String urlName){
         BufferedReader rd = null;
         StringBuilder sb = null;
@@ -81,26 +105,5 @@ public class DBHandler {
             e.printStackTrace();
         }
         return "";
-    }
-
-    public String[] getHistory(String jsonString) {
-        try {
-            JSONArray array = new JSONArray(jsonString);
-            String[] res = new String[array.length()];
-            //for (int i = 0; i < array.length(); i++) {
-            //    JSONObject curObject = array.getJSONObject(i);
-            //    int id = curObject.getInt("drink_id");
-            //    JSONObject drink_info = new JSONObject(getDrinkById(id));
-            //    res[i] = curObject.getString("time") + " - " + drink_info.getString("Type")
-            //            + " x" + drink_info.getInt("Strength") + " (sugar: " +
-            //            drink_info.getInt("Sugar") + ") (T: " +
-            //            drink_info.getInt("Temperature") + ")";
-            //}
-            return res;
-        }
-        catch (JSONException e){
-            e.printStackTrace();
-        }
-        return null;
     }
 }

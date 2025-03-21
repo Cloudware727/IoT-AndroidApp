@@ -6,6 +6,8 @@ import androidx.core.content.ContextCompat;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,6 +23,10 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +40,7 @@ public class history_screen extends Fragment {
     private RecyclerView historyList;
     private ItemAdapter adapter;
     private List<ItemModel> items;
+    private ArrayList<String> orders;
 
     public history_screen() {
         // Required empty public constructor
@@ -66,11 +73,42 @@ public class history_screen extends Fragment {
         View view = inflater.inflate(R.layout.fragment_history_screen, container, false);
         historyList = view.findViewById(R.id.historyList);
         historyList.setLayoutManager(new LinearLayoutManager(getContext()));
-
         DBHandler db = new DBHandler();
         items = new ArrayList<>();
         // TODO: use username global parameter
-        String user = "ArnoJanssens";
+        String user = "shlok";
+        orders = new ArrayList<>();
+
+        adapter = new ItemAdapter(items, new ItemAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                String clickedItem = items.get(position).getText();
+                Toast.makeText(getContext(), "Added to favourites", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        new Thread(() -> {
+            String historyJSON = db.getHistory(user);
+            try {
+                JSONArray array = new JSONArray(historyJSON);
+                for (int i = 0; i < array.length(); i++) {
+                    JSONObject curObject = array.getJSONObject(i);
+                    String date = curObject.get("orderTime").toString();
+                    orders.add(date + " - " +
+                            curObject.getString("type") + " x" +
+                            curObject.getInt("strength") + " (sugar: " +
+                            curObject.getInt("sugar") + ") (T: " +
+                            curObject.getInt("temperature") + ")");
+                }
+                for (String str: orders)
+                    items.add(new ItemModel(str));
+
+                if (getActivity() == null) return;
+                getActivity().runOnUiThread(() -> adapter.notifyDataSetChanged());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }).start();
 
         historyList.setAdapter(adapter);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(historyList.getContext(),
