@@ -1,5 +1,7 @@
 package com.example.iot_android_app;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +31,9 @@ public class LoggedInFragment extends Fragment {
         Button btnLogout = view.findViewById(R.id.btn_logout);
 
         // Example: Set username (Change this based on actual user data)
-        String username = "User";  // Replace with actual username if stored
+        SharedPreferences prefs = requireActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        String username = prefs.getString("username", "Guest");
+
         tvWelcome.setText("Welcome, " + username + "!");
 
         // Logout Button

@@ -1,5 +1,7 @@
 package com.example.iot_android_app;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,13 +23,19 @@ import org.json.JSONObject;
 
 public class account_screen extends Fragment {
 
-    public account_screen() {
-        // Required empty public constructor
-    }
+    public account_screen() {}
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        SharedPreferences prefs = requireActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
+
+        if (isLoggedIn) {
+            navigateToLoggedInScreen();
+            return new View(requireContext()); // Avoids inflating login screen
+        }
+
         View view = inflater.inflate(R.layout.fragment_account_screen, container, false);
 
         EditText etUsername = view.findViewById(R.id.et_username);
@@ -57,25 +65,28 @@ public class account_screen extends Fragment {
                         }
 
                         try {
-                            Log.d("LoginResponse", "Raw Response: " + response);  // Debugging line
-
-                            JSONArray jsonResponse = new JSONArray(response);  // Ensure it's a JSON array
-
+                            JSONArray jsonResponse = new JSONArray(response);
                             if (jsonResponse.length() == 0) {
                                 Toast.makeText(getActivity(), "Invalid server response!", Toast.LENGTH_SHORT).show();
                                 return;
                             }
 
-                            JSONObject firstObject = jsonResponse.getJSONObject(0);  // Get first object
+                            JSONObject firstObject = jsonResponse.getJSONObject(0);
                             if (!firstObject.has("match_found")) {
                                 Toast.makeText(getActivity(), "Invalid JSON structure!", Toast.LENGTH_SHORT).show();
                                 return;
                             }
 
-                            int matchFound = firstObject.getInt("match_found");  // Extract value
+                            int matchFound = firstObject.getInt("match_found");
 
                             if (matchFound == 1) {
                                 Toast.makeText(getActivity(), "Login Successful!", Toast.LENGTH_SHORT).show();
+
+                                SharedPreferences.Editor editor = prefs.edit();
+                                editor.putBoolean("isLoggedIn", true);
+                                editor.putString("username", username);
+                                editor.apply();
+
                                 navigateToLoggedInScreen();
                             } else {
                                 Toast.makeText(getActivity(), "Invalid username or password!", Toast.LENGTH_SHORT).show();
@@ -84,7 +95,6 @@ public class account_screen extends Fragment {
                             Log.e("LoginError", "JSON Parsing Error: " + e.getMessage());
                             Toast.makeText(getActivity(), "Error processing response.", Toast.LENGTH_SHORT).show();
                         }
-
                     });
                 }).start();
             }
