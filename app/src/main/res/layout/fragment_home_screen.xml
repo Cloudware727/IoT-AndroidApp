@@ -29,7 +29,7 @@
         app:layout_constraintTop_toBottomOf="@id/rvCoffeeCarousel"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:paddingTop="5dp"
+        android:paddingTop="20dp"
         android:paddingBottom="5dp"
         android:paddingLeft="25dp"
         android:paddingRight="25dp">
@@ -63,6 +63,8 @@
                 android:textColor="@android:color/white"
                 app:chipBackgroundColor="@color/chip_background_color"
                 android:checkable="true"
+                app:chipStartPadding="2dp"
+                app:chipEndPadding="2dp"
                 />
 
             <com.google.android.material.chip.Chip
@@ -74,6 +76,8 @@
                 app:chipBackgroundColor="@color/chip_background_color"
                 android:checkable="true"
                 android:checked="true"
+                app:chipStartPadding="2dp"
+                app:chipEndPadding="2dp"
                 />
 
             <com.google.android.material.chip.Chip
@@ -84,6 +88,8 @@
                 android:textColor="@android:color/white"
                 app:chipBackgroundColor="@color/chip_background_color"
                 android:checkable="true"
+                app:chipStartPadding="2dp"
+                app:chipEndPadding="2dp"
                 />
 
         </com.google.android.material.chip.ChipGroup>
