@@ -154,7 +154,7 @@ public class home_screen extends Fragment{
         MaterialButton btnTempDecrease = view.findViewById(R.id.decreaseBtn);
         // Slider listener
         tempSlider.addOnChangeListener((slider, value, fromUser) -> {
-            int temperature = 60+(int) value;
+            int temperature = 50+(int) value;
             tvTempLabel.setText("Infuse Temperature: " + temperature + "°C");
             brewConfiguration.setTemperature(temperature);
         });
@@ -163,7 +163,7 @@ public class home_screen extends Fragment{
             float currentValue = tempSlider.getValue();
             if (currentValue < tempSlider.getValueTo()) { // Check if within max limit
                 tempSlider.setValue(currentValue + 1); // Increase by 1
-                brewConfiguration.setTemperature((int)currentValue +60 + 1);
+                brewConfiguration.setTemperature((int)currentValue +50 + 1);
             }
         });
         // Decrease button listener
@@ -171,7 +171,7 @@ public class home_screen extends Fragment{
             float currentValue = tempSlider.getValue();
             if (currentValue > tempSlider.getValueFrom()) { // Check if within min limit
                 tempSlider.setValue(currentValue - 1); // Decrease by 1
-                brewConfiguration.setTemperature((int)currentValue +60 - 1);
+                brewConfiguration.setTemperature((int)currentValue +50 - 1);
             }
         });
         // Start button listener
