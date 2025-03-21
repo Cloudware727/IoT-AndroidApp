@@ -38,8 +38,6 @@ public class home_screen extends Fragment{
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home_screen, container, false);
 
-        //make brewingConfiguration object
-        BrewConfiguration brewConfiguration = new BrewConfiguration(1, 2,0,70);
         // Initialize RecyclerView
         rvCoffeeCarousel = view.findViewById(R.id.rvCoffeeCarousel);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
@@ -50,6 +48,9 @@ public class home_screen extends Fragment{
         coffeeList.add(new Coffee(1, "Herbs Tea", 80, R.drawable.herbs_tea_bg));  // Background image res ID as well
         coffeeList.add(new Coffee(2, "Lemon Tea", 50, R.drawable.lemon_tea_bg));
         coffeeList.add(new Coffee(3, "Instant Coffee", 60, R.drawable.instant_coffee_bg));
+
+        //make brewingConfiguration object
+        BrewConfiguration brewConfiguration = new BrewConfiguration(1, coffeeList.get(0).getName(), 2,0,70);
 
         // Set up the adapter with a callback for long press
         adapter = new CoffeeCarouselAdapter(coffeeList);
@@ -70,6 +71,7 @@ public class home_screen extends Fragment{
                     Coffee currentCoffee = coffeeList.get(pos);
                     // Now update your brewing configuration with the current hero card info
                     brewConfiguration.setCoffeeId(currentCoffee.getId());
+                    brewConfiguration.setName(currentCoffee.getName());
                 }
             }
         });
@@ -97,7 +99,7 @@ public class home_screen extends Fragment{
         });
 
         //sugar
-        cgShotSize.setOnCheckedStateChangeListener((group, checkedIds) -> {
+        cgSugarSize.setOnCheckedStateChangeListener((group, checkedIds) -> {
             int sugarLevel = 0; // Default value
             for (int checkedId : checkedIds) {
                 if (checkedId == R.id.sugar_none) {
@@ -142,6 +144,11 @@ public class home_screen extends Fragment{
                 tempSlider.setValue(currentValue - 1); // Decrease by 1
                 brewConfiguration.setTemperature((int)currentValue - 1);
             }
+        });
+        // Start button listener
+        MaterialButton btnStart = view.findViewById(R.id.actionBtn);
+        btnStart.setOnClickListener(v -> {
+            brewConfiguration.sendOrder(getActivity());
         });
 
         return view;

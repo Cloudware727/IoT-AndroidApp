@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class DBHandler {
     public String getDrinkById(int id) {
@@ -19,6 +21,8 @@ public class DBHandler {
 
     private String SignUpUrl = "https://studev.groept.be/api/a24ib2team102/SignUpAppChecker/";
     private String LoginUrl = "https://studev.groept.be/api/a24ib2team102/CheckLoginData/";
+    private String sendOrderUrl = "https://studev.groept.be/api/a24ib2team102/send_order/";
+    private String sendOrderMachineUrl = "https://studev.groept.be/api/a24ib2team102/send_order_machine/";
 
     public String signUpUser(String username, String email, String password) {
         String requestUrl = SignUpUrl + "?username=" + username + "&password=" + password + "&email=" + email ;
@@ -29,6 +33,14 @@ public class DBHandler {
     public String LogInUser(String username,String password){
         String requestUrl = LoginUrl + username + "/" + password;
         return  makeGETRequest(requestUrl);
+    }
+
+    public String urlSendOrder(int id, String name, int sugar, int shot, int temp, String uname){
+        String sqlDateTime = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
+        String requestUrl = sendOrderUrl + name + "/" + sugar + "/" + shot + "/" + temp + "/" + uname + "/" + sqlDateTime;
+        requestUrl = requestUrl.replaceAll(" ", "+");
+        String requestUrl2 = sendOrderMachineUrl + id +"/"+ sugar +"/"+ shot +"/"+ temp;
+        return  makeGETRequest(requestUrl)+makeGETRequest(requestUrl2);
     }
 
     public String makeGETRequest(String urlName){
