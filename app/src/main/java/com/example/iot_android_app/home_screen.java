@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSnapHelper;
+import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
@@ -102,7 +103,7 @@ public class home_screen extends Fragment{
         rvCoffeeCarousel.setAdapter(adapter);
 
         // Attach LinearSnapHelper for snapping behavior
-        snapHelper = new LinearSnapHelper();
+        PagerSnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(rvCoffeeCarousel);
 
         // listen for scroll events to update your brewing config
