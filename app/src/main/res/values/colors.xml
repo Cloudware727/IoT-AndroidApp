@@ -8,10 +8,10 @@
     <color name="coffee_brown">#6F4E37</color>
     <color name="purple">#965AFB</color>
     <color name="background_color">#F8F0E3</color>
-    <color name="slider_track">#D7C7B9 </color>
-    <color name="slider_bg">#F0E0C6  </color>
-    <color name="selected_chip_color">#007AFF</color>
-    <color name="unselected_chip_color_used">#D3D3D3  </color>
+    <color name="slider_track">#E8D8C2  </color>
+    <color name="slider_bg">#F8F0E3  </color>
+    <color name="disabled_button_color">#CCCCCC</color>
+    <color name="unselected_chip_color_used">#E8D8C2   </color>
     <color name="unselected_chip_color">#A58A6A</color> <!---color for ripples of button-->
 
 </resources>
