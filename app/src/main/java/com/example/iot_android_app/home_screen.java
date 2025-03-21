@@ -74,9 +74,9 @@ public class home_screen extends Fragment{
         }).start();
         // Initialize coffee list with some sample coffee data
         coffeeList = new ArrayList<>();
-        coffeeList.add(new Coffee(1, "Herbs Coffee", 80, R.drawable.herbs_tea_bg));  // Background image res ID as well
-        coffeeList.add(new Coffee(2, "Lemon Tea", 50, R.drawable.lemon_tea_bg));
-        coffeeList.add(new Coffee(3, "Instant Coffee", 60, R.drawable.instant_coffee_bg));
+        coffeeList.add(new Coffee(1, " ", 100, R.drawable.herbs_tea_bg));  // Background image res ID as well
+        coffeeList.add(new Coffee(2, " ", 100, R.drawable.lemon_tea_bg));
+        coffeeList.add(new Coffee(3, " ", 100, R.drawable.instant_coffee_bg));
 
         //make brewingConfiguration object
         BrewConfiguration brewConfiguration = new BrewConfiguration(1, coffeeList.get(0).getName(), 2,0,70);
