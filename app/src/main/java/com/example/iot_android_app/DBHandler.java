@@ -19,10 +19,14 @@ public class DBHandler {
         return makeGETRequest("https://studev.groept.be/api/a24ib2team102/get_drink_by_id/" + id);
     }
 
+
+    private String user = "shlok";
     private String SignUpUrl = "https://studev.groept.be/api/a24ib2team102/SignUpAppChecker/";
     private String LoginUrl = "https://studev.groept.be/api/a24ib2team102/CheckLoginData/";
     private String sendOrderUrl = "https://studev.groept.be/api/a24ib2team102/send_order/";
     private String sendOrderMachineUrl = "https://studev.groept.be/api/a24ib2team102/send_order_machine/";
+    private String sendFavouriteUrl = "https://studev.groept.be/api/a24ib2team102/add_to_fav/";
+
 
     public String signUpUser(String username, String email, String password) {
         String requestUrl = SignUpUrl + "?username=" + username + "&password=" + password + "&email=" + email ;
@@ -35,12 +39,19 @@ public class DBHandler {
         return  makeGETRequest(requestUrl);
     }
 
-    public String urlSendOrder(int id, String name, int sugar, int shot, int temp, String uname){
+    //send current data to orders and order_machine
+    public String sendMyOrder(int id, String name, int sugar, int shot, int temp){
         String sqlDateTime = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
-        String requestUrl = sendOrderUrl + name + "/" + sugar + "/" + shot + "/" + temp + "/" + uname + "/" + sqlDateTime;
+        String requestUrl = sendOrderUrl + name + "/" + sugar + "/" + shot + "/" + temp + "/" + user + "/" + sqlDateTime;
         requestUrl = requestUrl.replaceAll(" ", "+");
         String requestUrl2 = sendOrderMachineUrl + id +"/"+ sugar +"/"+ shot +"/"+ temp;
         return  makeGETRequest(requestUrl)+makeGETRequest(requestUrl2);
+    }
+    //send the favourite
+    public String sendMyFavourite(String name, int shot, int sugar, int temp){
+        String requestUrl = sendFavouriteUrl + user + "/" + name + "/" + shot + "/" + sugar + "/" + temp;
+        requestUrl = requestUrl.replaceAll(" ", "+");
+        return  makeGETRequest(requestUrl);
     }
 
     public String makeGETRequest(String urlName){

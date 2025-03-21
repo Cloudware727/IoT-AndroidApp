@@ -50,16 +50,36 @@ public class BrewConfiguration {
     public void sendOrder(Activity activity){
         new Thread(() -> {
             DBHandler dbHandler = new DBHandler();
-            String response = dbHandler.urlSendOrder(coffeeId, name, sugarLevel, shotSize, temperature, "shlok").replaceAll("\\n", "");
+            String response = dbHandler.sendMyOrder(coffeeId, name, sugarLevel, shotSize, temperature).replaceAll("\\n", "");
 
             if (activity == null) return;
 
             activity.runOnUiThread(() -> {
                 if (response.equals("[][]")) {
-                    Toast.makeText(activity, "Order Placed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "Order Placed!", Toast.LENGTH_SHORT).show();
                 } else {
                     Log.e("SendOrder", "response: " + response);
-                    Toast.makeText(activity, "Failed to place order", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "Failed to place order!", Toast.LENGTH_SHORT).show();
+                }
+
+
+            });
+        }).start();
+    }
+
+    public void sendFavourite(Activity activity){
+        new Thread(() -> {
+            DBHandler dbHandler = new DBHandler();
+            String response = dbHandler.sendMyFavourite(name, shotSize, sugarLevel, temperature).replaceAll("\\n", "");
+
+            if (activity == null) return;
+
+            activity.runOnUiThread(() -> {
+                if (response.equals("[]")) {
+                    Toast.makeText(activity, "Added to favourites!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.e("SendOrder", "response: " + response);
+                    Toast.makeText(activity, "Failed to add favourite!", Toast.LENGTH_SHORT).show();
                 }
 
 
