@@ -26,6 +26,7 @@ public class DBHandler {
     private String sendOrderUrl = "https://studev.groept.be/api/a24ib2team102/send_order/";
     private String sendOrderMachineUrl = "https://studev.groept.be/api/a24ib2team102/send_order_machine/";
     private String sendFavouriteUrl = "https://studev.groept.be/api/a24ib2team102/add_to_fav/";
+    private String getNameLevelUrl = "https://studev.groept.be/api/a24ib2team102/get_name_level";
 
 
     public String signUpUser(String username, String email, String password) {
@@ -52,6 +53,10 @@ public class DBHandler {
         String requestUrl = sendFavouriteUrl + user + "/" + name + "/" + shot + "/" + sugar + "/" + temp;
         requestUrl = requestUrl.replaceAll(" ", "+");
         return  makeGETRequest(requestUrl);
+    }
+    //get names and levels of tea and coffee
+    public String getNameLevel(){
+        return makeGETRequest(getNameLevelUrl);
     }
 
     public String makeGETRequest(String urlName){

@@ -13,11 +13,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +32,6 @@ public class home_screen extends Fragment{
     private RecyclerView rvCoffeeCarousel;
     private CoffeeCarouselAdapter adapter;
     private List<Coffee> coffeeList;
-
     private LinearSnapHelper snapHelper;
 
     @Override
@@ -43,9 +47,34 @@ public class home_screen extends Fragment{
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         rvCoffeeCarousel.setLayoutManager(layoutManager);
 
+        //get name and level from database
+        new Thread(() -> {
+            DBHandler dbHandler = new DBHandler();
+            String response = dbHandler.getNameLevel();
+            if (getActivity() == null) return;
+
+            getActivity().runOnUiThread(() -> {
+                if (response.isEmpty()) {Toast.makeText(getActivity(), "Server Error, failed to load data!", Toast.LENGTH_SHORT).show();return;}
+                try {
+                    JSONArray jsonResponse = new JSONArray(response);
+                    if (jsonResponse.length() == 0) {Toast.makeText(getActivity(), "Invalid server response!", Toast.LENGTH_SHORT).show();return;}
+                    for (int i = 0; i < jsonResponse.length(); i++)
+                    {
+                        Log.e("test", "obj num: " + i);
+                        JSONObject curObject = jsonResponse.getJSONObject(i);
+                        coffeeList.get(i).setName(curObject.getString("name"));
+                        coffeeList.get(i).setCoffeeLevel(curObject.getInt("level"));
+                    }
+                    adapter = new CoffeeCarouselAdapter(coffeeList);
+                    rvCoffeeCarousel.setAdapter(adapter);
+                } catch (JSONException e) {
+                        Toast.makeText(getActivity(), "Error processing response.", Toast.LENGTH_SHORT).show();
+                    }
+            });
+        }).start();
         // Initialize coffee list with some sample coffee data
         coffeeList = new ArrayList<>();
-        coffeeList.add(new Coffee(1, "Herbs Tea", 80, R.drawable.herbs_tea_bg));  // Background image res ID as well
+        coffeeList.add(new Coffee(1, "Herbs Coffee", 80, R.drawable.herbs_tea_bg));  // Background image res ID as well
         coffeeList.add(new Coffee(2, "Lemon Tea", 50, R.drawable.lemon_tea_bg));
         coffeeList.add(new Coffee(3, "Instant Coffee", 60, R.drawable.instant_coffee_bg));
 
