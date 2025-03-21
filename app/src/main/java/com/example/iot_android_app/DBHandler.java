@@ -18,11 +18,17 @@ public class DBHandler {
     }
 
     private String SignUpUrl = "https://studev.groept.be/api/a24ib2team102/SignUpAppChecker/";
+    private String LoginUrl = "https://studev.groept.be/api/a24ib2team102/CheckLoginData/";
 
     public String signUpUser(String username, String email, String password) {
-        String requestUrl = SignUpUrl + "?username=" + username + "&email=" + email + "&password=" + password;
+        String requestUrl = SignUpUrl + "?username=" + username + "&password=" + password + "&email=" + email ;
         Log.d("SignUpRequest", "Request URL: " + requestUrl);
         return makeGETRequest(requestUrl);
+    }
+
+    public String LogInUser(String username,String password){
+        String requestUrl = LoginUrl + username + "/" + password;
+        return  makeGETRequest(requestUrl);
     }
 
     public String makeGETRequest(String urlName){
