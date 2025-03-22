@@ -66,7 +66,10 @@ public class fav_screen extends Fragment {
         Boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
 
         if (isLoggedIn == false) {
-            return inflater.inflate(R.layout.fragment_blocked_screen, container, false);
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.frame_layout, new BlockedScreen())
+                    .commit();
+            return new View(requireContext());
         } else {
 
             // Inflate the layout for this fragment
