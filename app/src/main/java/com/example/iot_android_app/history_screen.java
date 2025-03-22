@@ -1,25 +1,21 @@
 package com.example.iot_android_app;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,7 +24,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -39,8 +34,8 @@ import java.util.List;
 public class history_screen extends Fragment {
     private RecyclerView historyList;
     private ItemAdapter adapter;
-    private List<ItemModel> items;
-    private ArrayList<String> orders;
+    private List<orderModel> items;
+    private ArrayList<orderModel> orders;
 
     public history_screen() {
         // Required empty public constructor
@@ -75,13 +70,19 @@ public class history_screen extends Fragment {
         historyList.setLayoutManager(new LinearLayoutManager(getContext()));
         DBHandler db = new DBHandler();
         items = new ArrayList<>();
-        // TODO: use username global parameter
-        String user = "shlok";
+        SharedPreferences prefs = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        String user = prefs.getString("username", "Guest");
         orders = new ArrayList<>();
 
         adapter = new ItemAdapter(items, new ItemAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
+                orderModel clickedItem = items.get(position);
+                
+                new Thread(() -> {
+                    db.sendMyFavourite(clickedItem.getType(), clickedItem.getShots(),
+                            clickedItem.getSugar(), clickedItem.getTemp());
+                }).start();
                 Toast.makeText(getContext(), "Added to favourites", Toast.LENGTH_SHORT).show();
             }
         });
@@ -90,17 +91,18 @@ public class history_screen extends Fragment {
             String historyJSON = db.getHistory(user);
             try {
                 JSONArray array = new JSONArray(historyJSON);
+                orders.clear();
                 for (int i = 0; i < array.length(); i++) {
                     JSONObject curObject = array.getJSONObject(i);
                     String date = curObject.get("orderTime").toString().substring(5, 16);
-                    orders.add(date + " - " +
-                            curObject.getString("type") + " x" +
-                            curObject.getInt("strength") + " (sugar: " +
-                            curObject.getInt("sugar") + ") (T: " +
-                            curObject.getInt("temperature") + ")");
+                    String type = curObject.getString("type");
+                    int shots = curObject.getInt("strength");
+                    int sugar = curObject.getInt("sugar");
+                    int temperature = curObject.getInt("temperature");
+                    orders.add(new orderModel(date, type, shots, sugar, temperature));
                 }
-                for (String str: orders)
-                    items.add(new ItemModel(str));
+                for (orderModel o: orders)
+                    items.add(o);
 
                 if (getActivity() == null) return;
                 getActivity().runOnUiThread(() -> adapter.notifyDataSetChanged());
@@ -114,31 +116,62 @@ public class history_screen extends Fragment {
                 DividerItemDecoration.VERTICAL);
         dividerItemDecoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.divider));
         historyList.addItemDecoration(dividerItemDecoration);
+
         return view;
     }
 
-    private class ItemModel {
-        private String text;
+    private class orderModel {
+        private String type;
+        private int shots;
+        private int sugar;
+        private int temp;
+        private String date;
 
-        public ItemModel(String text) {
-            this.text = text;
+        public orderModel(String date, String type, int shots, int sugar, int temp) {
+            this.type = type;
+            this.date = date;
+            this.shots = shots;
+            this.sugar = sugar;
+            this.temp = temp;
         }
 
-        public String getText() {
-            return text;
+        @Override
+        public String toString() {
+            return date + " - " + type + " x" + shots + " (sugar: " +
+                    sugar + ") (T: " + temp + ")";
+        }
+
+        public int getShots() {
+            return shots;
+        }
+
+        public int getSugar() {
+            return sugar;
+        }
+
+        public int getTemp() {
+            return temp;
+        }
+
+        public String getDate() {
+            return date;
+        }
+
+        public String getType() {
+            return type;
         }
     }
 
     public static class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder> {
 
-        private List<ItemModel> itemList;
+        private List<orderModel> itemList;
         private OnItemClickListener listener;
 
         public interface OnItemClickListener {
             void onItemClick(View view, int position);
         }
 
-        public ItemAdapter(List<ItemModel> itemList, OnItemClickListener listener) {
+        public ItemAdapter(List<orderModel> itemList, OnItemClickListener listener) {
             this.itemList = itemList;
             this.listener = listener;
         }
@@ -153,7 +186,7 @@ public class history_screen extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
-            String text = itemList.get(position).getText();
+            String text = itemList.get(position).toString();
 
             TextView textView = holder.textView;
             textView.setText(text);

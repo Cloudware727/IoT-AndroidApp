@@ -63,24 +63,6 @@ public class DBHandler {
     public String getHistory(String user) {
         String url = getHistoryUrl + user;
         return makeGETRequest(url);
-        /*try {
-            JSONArray array = new JSONArray(jsonString);
-            String[] res = new String[array.length()];
-            //for (int i = 0; i < array.length(); i++) {
-            //    JSONObject curObject = array.getJSONObject(i);
-            //    int id = curObject.getInt("drink_id");
-            //    JSONObject drink_info = new JSONObject(getDrinkById(id));
-            //    res[i] = curObject.getString("time") + " - " + drink_info.getString("Type")
-            //            + " x" + drink_info.getInt("Strength") + " (sugar: " +
-            //            drink_info.getInt("Sugar") + ") (T: " +
-            //            drink_info.getInt("Temperature") + ")";
-            //}
-            return res;
-        }
-        catch (JSONException e){
-            e.printStackTrace();
-        }
-        return null;*/
     }
 
     public String makeGETRequest(String urlName){
