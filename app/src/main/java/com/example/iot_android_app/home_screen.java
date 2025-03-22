@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSnapHelper;
+import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
@@ -33,6 +34,7 @@ public class home_screen extends Fragment{
     private CoffeeCarouselAdapter adapter;
     private List<Coffee> coffeeList;
     private LinearSnapHelper snapHelper;
+    private int startButtonDisableThresh = 5;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,6 +48,16 @@ public class home_screen extends Fragment{
         rvCoffeeCarousel = view.findViewById(R.id.rvCoffeeCarousel);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         rvCoffeeCarousel.setLayoutManager(layoutManager);
+
+        // Initialize buttons and all
+        ChipGroup cgShotSize = view.findViewById(R.id.cgShotSize);
+        ChipGroup cgSugarSize = view.findViewById(R.id.cgSugarSize);
+        Slider tempSlider = view.findViewById(R.id.tempSlider);
+        TextView tvTempLabel = view.findViewById(R.id.tvTempLabel);
+        MaterialButton btnTempIncrease = view.findViewById(R.id.increaseBtn);
+        MaterialButton btnTempDecrease = view.findViewById(R.id.decreaseBtn);
+        MaterialButton btnStart = view.findViewById(R.id.actionBtn);
+        MaterialButton btnFav = view.findViewById(R.id.addfavBtn);
 
         //get name and level from database
         new Thread(() -> {
@@ -65,8 +77,13 @@ public class home_screen extends Fragment{
                         coffeeList.get(i).setName(curObject.getString("name"));
                         coffeeList.get(i).setCoffeeLevel(curObject.getInt("level"));
                     }
+                    //re-initialize adapter for carousel
                     adapter = new CoffeeCarouselAdapter(coffeeList);
                     rvCoffeeCarousel.setAdapter(adapter);
+                    //set start button state
+                    if (coffeeList.get(0).getCoffeeLevel() < 5) {btnStart.setEnabled(false);}
+                    else {btnStart.setEnabled(true);}
+
                 } catch (JSONException e) {
                         Toast.makeText(getActivity(), "Error processing response.", Toast.LENGTH_SHORT).show();
                     }
@@ -86,10 +103,10 @@ public class home_screen extends Fragment{
         rvCoffeeCarousel.setAdapter(adapter);
 
         // Attach LinearSnapHelper for snapping behavior
-        snapHelper = new LinearSnapHelper();
+        PagerSnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(rvCoffeeCarousel);
 
-        // Optionally, listen for scroll events to update your brewing config
+        // listen for scroll events to update your brewing config
         rvCoffeeCarousel.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -101,15 +118,15 @@ public class home_screen extends Fragment{
                     // Now update your brewing configuration with the current hero card info
                     brewConfiguration.setCoffeeId(currentCoffee.getId());
                     brewConfiguration.setName(currentCoffee.getName());
+                    //update start button state - enable or disable
+                    if (currentCoffee.getCoffeeLevel() < startButtonDisableThresh) {btnStart.setEnabled(false);}
+                    else {btnStart.setEnabled(true);}
                 }
             }
         });
 
 
         //chip group listeners
-        ChipGroup cgShotSize = view.findViewById(R.id.cgShotSize);
-        ChipGroup cgSugarSize = view.findViewById(R.id.cgSugarSize);
-
         // Set OnCheckedStateChangeListener for the Shot Size ChipGroup
         cgShotSize.setOnCheckedStateChangeListener((group, checkedIds) -> {
             int selectedShot = 2; // Default value
@@ -148,10 +165,6 @@ public class home_screen extends Fragment{
 
 
         //temperature update
-        Slider tempSlider = view.findViewById(R.id.tempSlider);
-        TextView tvTempLabel = view.findViewById(R.id.tvTempLabel);
-        MaterialButton btnTempIncrease = view.findViewById(R.id.increaseBtn);
-        MaterialButton btnTempDecrease = view.findViewById(R.id.decreaseBtn);
         // Slider listener
         tempSlider.addOnChangeListener((slider, value, fromUser) -> {
             int temperature = 50+(int) value;
@@ -175,12 +188,10 @@ public class home_screen extends Fragment{
             }
         });
         // Start button listener
-        MaterialButton btnStart = view.findViewById(R.id.actionBtn);
         btnStart.setOnClickListener(v -> {
             brewConfiguration.sendOrder(getActivity());
         });
         // Favourites button listener
-        MaterialButton btnFav = view.findViewById(R.id.addfavBtn);
         btnFav.setOnClickListener(v -> {
             brewConfiguration.sendFavourite(getActivity());
         });

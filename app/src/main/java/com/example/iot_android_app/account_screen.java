@@ -21,9 +21,26 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class account_screen extends Fragment {
 
     public account_screen() {}
+
+    public String hashPassword(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] encodedHash = digest.digest(password.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : encodedHash) {
+                hexString.append(String.format("%02x", b));
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Nullable
     @Override
@@ -46,13 +63,14 @@ public class account_screen extends Fragment {
         btnLogin.setOnClickListener(v -> {
             String username = etUsername.getText().toString();
             String password = etPassword.getText().toString();
+            String hashed_password = hashPassword(password);
 
             if (username.isEmpty() || password.isEmpty()) {
                 Toast.makeText(getActivity(), "Please enter username and password", Toast.LENGTH_SHORT).show();
             } else {
                 new Thread(() -> {
                     DBHandler dbHandler = new DBHandler();
-                    String response = dbHandler.LogInUser(username, password);
+                    String response = dbHandler.LogInUser(username, hashed_password);
 
                     if (getActivity() == null) return;
 
@@ -81,6 +99,8 @@ public class account_screen extends Fragment {
 
                             if (matchFound == 1) {
                                 Toast.makeText(getActivity(), "Login Successful!", Toast.LENGTH_SHORT).show();
+
+                                //brewConfiguration.setName
 
                                 SharedPreferences.Editor editor = prefs.edit();
                                 editor.putBoolean("isLoggedIn", true);

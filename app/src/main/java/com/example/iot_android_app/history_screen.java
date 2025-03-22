@@ -78,7 +78,7 @@ public class history_screen extends Fragment {
             @Override
             public void onItemClick(View view, int position) {
                 orderModel clickedItem = items.get(position);
-                
+
                 new Thread(() -> {
                     db.sendMyFavourite(clickedItem.getType(), clickedItem.getShots(),
                             clickedItem.getSugar(), clickedItem.getTemp());
@@ -117,7 +117,20 @@ public class history_screen extends Fragment {
         dividerItemDecoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.divider));
         historyList.addItemDecoration(dividerItemDecoration);
 
-        return view;
+        //checks if user is logged in
+        prefs = requireActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        Boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
+
+        if (isLoggedIn == false) {
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.frame_layout, new BlockedScreen())
+                    .commit();
+            return new View(requireContext());
+        } else {
+
+            // Inflate the layout for this fragment
+            return view;
+        }
     }
 
     private class orderModel {
