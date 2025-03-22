@@ -82,6 +82,8 @@ public class account_screen extends Fragment {
                             if (matchFound == 1) {
                                 Toast.makeText(getActivity(), "Login Successful!", Toast.LENGTH_SHORT).show();
 
+                                //brewConfiguration.setName
+
                                 SharedPreferences.Editor editor = prefs.edit();
                                 editor.putBoolean("isLoggedIn", true);
                                 editor.putString("username", username);

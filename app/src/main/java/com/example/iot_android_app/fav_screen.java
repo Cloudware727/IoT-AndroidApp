@@ -1,5 +1,7 @@
 package com.example.iot_android_app;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -58,7 +60,17 @@ public class fav_screen extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_fav_screen, container, false);
+
+        // Checks if user is logged in
+        SharedPreferences prefs = requireActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        Boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
+
+        if (isLoggedIn == false) {
+            return inflater.inflate(R.layout.fragment_blocked_screen, container, false);
+        } else {
+
+            // Inflate the layout for this fragment
+            return inflater.inflate(R.layout.fragment_fav_screen, container, false);
+        }
     }
 }

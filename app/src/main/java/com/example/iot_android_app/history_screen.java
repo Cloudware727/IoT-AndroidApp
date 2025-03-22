@@ -1,5 +1,7 @@
 package com.example.iot_android_app;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;
@@ -114,7 +116,18 @@ public class history_screen extends Fragment {
                 DividerItemDecoration.VERTICAL);
         dividerItemDecoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.divider));
         historyList.addItemDecoration(dividerItemDecoration);
-        return view;
+
+        //checks if user is logged in
+        SharedPreferences prefs = requireActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        Boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
+
+        if (isLoggedIn == false) {
+            return inflater.inflate(R.layout.fragment_blocked_screen, container, false);
+        } else {
+
+            // Inflate the layout for this fragment
+            return view;
+        }
     }
 
     private class ItemModel {

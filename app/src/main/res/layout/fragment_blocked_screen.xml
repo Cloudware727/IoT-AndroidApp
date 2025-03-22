@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@color/background_color"
+    android:padding="24dp">
+
+    <ImageView
+        android:layout_width="320dp"
+        android:layout_height="320dp"
+        android:src="@drawable/coffee_machine"
+        android:layout_marginBottom="24dp"
+        android:contentDescription="User Icon" />
+
+    <TextView
+        android:id="@+id/tv_welcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="You do not have access to this feature"
+        android:textSize="21sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:layout_marginBottom="40dp" />
+
+    <TextView
+        android:id="@+id/tv_hint1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=" Already have an account ? Log in below."
+        android:textSize="16sp"
+        android:textColor="#666666"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/btn_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Login"
+        android:background="@color/coffee_brown"
+        android:textColor="#FFFFFF"
+        android:textAllCaps="false"
+        android:padding="12dp"
+        android:layout_marginBottom="24dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#CCCCCC"
+        android:layout_marginBottom="24dp" />
+
+    <TextView
+        android:id="@+id/tv_hint2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Don't have an account? Sign up below."
+        android:textSize="16sp"
+        android:textColor="#666666"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/btn_signup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sign Up"
+        android:background="@color/coffee_brown"
+        android:textColor="#FFFFFF"
+        android:textAllCaps="false"
+        android:padding="12dp" />
+
+</LinearLayout>
