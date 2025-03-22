@@ -70,8 +70,9 @@ public class history_screen extends Fragment {
         historyList.setLayoutManager(new LinearLayoutManager(getContext()));
         DBHandler db = new DBHandler();
         items = new ArrayList<>();
-        SharedPreferences prefs = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-        String user = prefs.getString("username", "Guest");
+        //SharedPreferences prefs = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        //String user = prefs.getString("username", "Guest");
+        String user = "shlok";
         orders = new ArrayList<>();
 
         adapter = new ItemAdapter(items, new ItemAdapter.OnItemClickListener() {
@@ -117,7 +118,7 @@ public class history_screen extends Fragment {
         dividerItemDecoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.divider));
         historyList.addItemDecoration(dividerItemDecoration);
 
-        //checks if user is logged in
+        /*//checks if user is logged in
         prefs = requireActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         Boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
 
@@ -130,7 +131,8 @@ public class history_screen extends Fragment {
 
             // Inflate the layout for this fragment
             return view;
-        }
+        }*/
+        return view;
     }
 
     private class orderModel {
@@ -150,8 +152,8 @@ public class history_screen extends Fragment {
 
         @Override
         public String toString() {
-            return date + " - " + type + " x" + shots + " (sugar: " +
-                    sugar + ") (T: " + temp + ")";
+            return date + '\n' + type + " (" + shots + " shot" + (shots == 1?")":"s)") +
+                    "\nSugar level: " + sugar + "\nTemperature: " + temp + "\u00B0C";
         }
 
         public int getShots() {
@@ -203,7 +205,7 @@ public class history_screen extends Fragment {
 
             TextView textView = holder.textView;
             textView.setText(text);
-            textView.setMaxLines(2);
+            textView.setMaxLines(5);
             textView.setEllipsize(TextUtils.TruncateAt.END);
         }
 
