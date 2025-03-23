@@ -63,17 +63,29 @@ public class history_screen extends Fragment {
         //SharedPreferences prefs = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         //String user = prefs.getString("username", "Guest");
         String user = "shlok";
+        loadHistory(db, user);
+        db.startSettingsUpdater();
         orders = new ArrayList<>();
-
         adapter = new ItemAdapter(items, new ItemAdapter.OnItemClickListener() {
             @Override
             public void favClick(View view, int position) {
                 orderModel clickedItem = items.get(position);
                 new Thread(() -> {
-                    db.sendMyFavourite(clickedItem.getType(), clickedItem.getShots(),
-                            clickedItem.getSugar(), clickedItem.getTemp());
+                    boolean isNowFavorite = db.switchFavorite(user, clickedItem.getType(),
+                            clickedItem.getShots(), clickedItem.getSugar(), clickedItem.getTemp());
+                    for (int i = 0; i < items.size(); i++) {
+                        orderModel item = items.get(i);
+                        if (item.getType().equals(clickedItem.getType()) &&
+                                item.getShots() == clickedItem.getShots() &&
+                                item.getSugar() == clickedItem.getSugar() &&
+                                item.getTemp() == clickedItem.getTemp()) {
+                            item.setFavorite(isNowFavorite);  // Update favorite status
+                        }
+                    }
+
+                    if (getActivity() == null) return;
+                    getActivity().runOnUiThread(() -> adapter.notifyDataSetChanged()); // Refresh entire list
                 }).start();
-                Toast.makeText(getActivity(), "Added to favorites!", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -98,42 +110,14 @@ public class history_screen extends Fragment {
                             }
                         }
 
-                        if (getActivity()==null) return;
-                        getActivity().runOnUiThread(() -> {
-                            adapter.notifyDataSetChanged();
-                        });
+                        if (getActivity() == null) return;
+                        getActivity().runOnUiThread(() -> adapter.notifyDataSetChanged());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }).start();
             }
         });
-
-        new Thread(() -> {
-            String historyJSON = db.getHistory(user);
-            try {
-                JSONArray array = new JSONArray(historyJSON);
-                orders.clear();
-                for (int i = 0; i < array.length(); i++) {
-                    JSONObject curObject = array.getJSONObject(i);
-                    String date = curObject.get("orderTime").toString().substring(5, 16);
-                    String type = curObject.getString("type");
-                    int shots = curObject.getInt("strength");
-                    int sugar = curObject.getInt("sugar");
-                    int temperature = curObject.getInt("temperature");
-                    boolean canBeOrdered = db.canBeOrdered(type);
-                    boolean isFav = db.isFavorite(user, type, shots, sugar, temperature);
-                    orders.add(new orderModel(date, type, shots, sugar, temperature, canBeOrdered, isFav));
-                }
-                items.clear();
-                items.addAll(orders);
-
-                if (getActivity() == null) return;
-                getActivity().runOnUiThread(() -> adapter.notifyDataSetChanged());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }).start();
 
         historyList.setAdapter(adapter);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(historyList.getContext(),
@@ -156,6 +140,41 @@ public class history_screen extends Fragment {
             return view;
         }*/
         return view;
+    }
+
+    private void loadHistory(DBHandler db, String user) {
+        new Thread(() -> {
+            String historyJSON = db.getHistory(user);
+            List<orderModel> newOrders = new ArrayList<>();
+
+            try {
+                JSONArray array = new JSONArray(historyJSON);
+                for (int i = 0; i < array.length(); i++) {
+                    JSONObject curObject = array.getJSONObject(i);
+                    newOrders.add(new orderModel(
+                            curObject.getString("orderTime").substring(5, 16),
+                            curObject.getString("type"),
+                            curObject.getInt("strength"),
+                            curObject.getInt("sugar"),
+                            curObject.getInt("temperature"),
+                            db.canBeOrdered(curObject.getString("type")),
+                            db.isFavorite(user, curObject.getString("type"),
+                                    curObject.getInt("strength"),
+                                    curObject.getInt("sugar"),
+                                    curObject.getInt("temperature"))
+                    ));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            if (getActivity() == null) return;
+            getActivity().runOnUiThread(() -> {
+                items.clear();
+                items.addAll(newOrders);
+                adapter.notifyDataSetChanged();
+            });
+        }).start();
     }
 
     private class orderModel {
@@ -214,6 +233,10 @@ public class history_screen extends Fragment {
         public void setFavorite(boolean favorite) {
             isFavorite = favorite;
         }
+
+        public int getFavIcon() {
+            return isFavorite ? R.drawable.remove_from_fav : R.drawable.save_to_fav_icon;
+        }
     }
 
     public static class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder> {
@@ -248,10 +271,7 @@ public class history_screen extends Fragment {
             textView.setMaxLines(5);
             textView.setEllipsize(TextUtils.TruncateAt.END);
             holder.buttonRe.setEnabled(curItem.isCanBeOrdered());
-            if (curItem.isFavorite())
-                holder.buttonFav.setCompoundDrawablesWithIntrinsicBounds(R.drawable.save_to_fav_icon, 0, 0, 0);
-            else
-                holder.buttonFav.setCompoundDrawablesWithIntrinsicBounds(R.drawable.remove_from_fav, 0, 0, 0);
+            holder.buttonFav.setCompoundDrawablesWithIntrinsicBounds(curItem.getFavIcon(), 0, 0, 0);
         }
 
         @Override

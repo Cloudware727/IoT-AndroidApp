@@ -1,6 +1,11 @@
 package com.example.iot_android_app;
 
 import android.util.Log;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,11 +22,9 @@ import java.util.Date;
 
 public class DBHandler {
     private int disableThr = 5;
-
-    public String getDrinkById(int id) {
-        return makeGETRequest("https://studev.groept.be/api/a24ib2team102/get_drink_by_id/" + id);
-    }
-
+    private JSONArray settingsCache;
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final int UPDATE_INTERVAL = 5000; // 5 seconds
 
     private String user = "shlok";
     private String SignUpUrl = "https://studev.groept.be/api/a24ib2team102/SignUpAppChecker/";
@@ -33,6 +36,7 @@ public class DBHandler {
     private String getHistoryUrl = "https://studev.groept.be/api/a24ib2team102/get_history_for_user/";
     private String getSettings = "https://studev.groept.be/api/a24ib2team102/get_settings";
     private String isFavorite = "https://studev.groept.be/api/a24ib2team102/in_favorites/";
+    private String removeFavorite = "https://studev.groept.be/api/a24ib2team102/remove_favorite/";
 
     public String signUpUser(String username, String email, String password) {
         String requestUrl = SignUpUrl + "?username=" + username + "&password=" + password + "&email=" + email ;
@@ -73,6 +77,34 @@ public class DBHandler {
         return makeGETRequest(url);
     }
 
+    public boolean switchFavorite(String user, String type, int shots, int sugar, int temp) {
+        String url = isFavorite + shots + '/' + sugar + '/' + temp;
+        String settingsJSON = makeGETRequest(url);
+        boolean alreadyFavorite = false;
+        int favoriteId = -1;
+        try {
+            JSONArray array = new JSONArray(settingsJSON);
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject curObject = array.getJSONObject(i);
+                if (curObject.getString("type").equals(type) && curObject.getString("user_id").equals(user)) {
+                    alreadyFavorite = true;
+                    favoriteId = curObject.getInt("id");
+                    break;
+                }
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (alreadyFavorite) {
+            makeGETRequest(removeFavorite + favoriteId);
+            return false;
+        } else {
+            sendMyFavourite(type, shots, sugar, temp);
+            return true;
+        }
+    }
+
     public boolean isFavorite(String user, String type, int shots, int sugar, int T) {
         String url = isFavorite + shots + '/' + sugar + '/' + T;
         String settingsJSON = makeGETRequest(url);
@@ -92,20 +124,34 @@ public class DBHandler {
     }
 
     public boolean canBeOrdered(String type) {
-        String settingsJSON = getSettings();
+        if (settingsCache == null) return false;
         try {
-            JSONArray array = new JSONArray(settingsJSON);
-            for (int i = 0; i < 3; i++) {
-                JSONObject curObject = array.getJSONObject(i);
-                String curType = curObject.getString("name");
-                if (curType.equals(type) &&
-                        curObject.getInt("level") > disableThr)
+            for (int i = 0; i < settingsCache.length(); i++) {
+                JSONObject curObject = settingsCache.getJSONObject(i);
+                if (curObject.getString("name").equals(type) &&
+                        curObject.getInt("level") > disableThr) {
                     return true;
+                }
             }
         } catch (JSONException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
         return false;
+    }
+
+    public void startSettingsUpdater() {
+        scheduler.scheduleWithFixedDelay(() -> {
+            String settingsJSON = getSettings();
+            try {
+                settingsCache = new JSONArray(settingsJSON);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }, 0, 5, TimeUnit.SECONDS); // Runs every 5 seconds
+    }
+
+    public String getDrinkById(int id) {
+        return makeGETRequest("https://studev.groept.be/api/a24ib2team102/get_drink_by_id/" + id);
     }
 
     public String makeGETRequest(String urlName){
