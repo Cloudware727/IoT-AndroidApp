@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class DBHandler {
+    private int disableThr = 5;
+
     public String getDrinkById(int id) {
         return makeGETRequest("https://studev.groept.be/api/a24ib2team102/get_drink_by_id/" + id);
     }
@@ -29,11 +31,17 @@ public class DBHandler {
     private String sendFavouriteUrl = "https://studev.groept.be/api/a24ib2team102/add_to_fav/";
     private String getNameLevelUrl = "https://studev.groept.be/api/a24ib2team102/get_name_level";
     private String getHistoryUrl = "https://studev.groept.be/api/a24ib2team102/get_history_for_user/";
+    private String getSettings = "https://studev.groept.be/api/a24ib2team102/get_settings";
+    private String isFavorite = "https://studev.groept.be/api/a24ib2team102/in_favorites/";
 
     public String signUpUser(String username, String email, String password) {
         String requestUrl = SignUpUrl + "?username=" + username + "&password=" + password + "&email=" + email ;
         Log.d("SignUpRequest", "Request URL: " + requestUrl);
         return makeGETRequest(requestUrl);
+    }
+
+    public String getSettings() {
+        return makeGETRequest(getSettings);
     }
 
     public String LogInUser(String username,String password){
@@ -63,6 +71,41 @@ public class DBHandler {
     public String getHistory(String user) {
         String url = getHistoryUrl + user;
         return makeGETRequest(url);
+    }
+
+    public boolean isFavorite(String user, String type, int shots, int sugar, int T) {
+        String url = isFavorite + shots + '/' + sugar + '/' + T;
+        String settingsJSON = makeGETRequest(url);
+        try {
+            JSONArray array = new JSONArray(settingsJSON);
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject curObject = array.getJSONObject(i);
+                String curType = curObject.getString("type");
+                String curUser = curObject.getString("user_id");
+                if (curType.equals(type) && curUser.equals(user))
+                    return true;
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+
+    public boolean canBeOrdered(String type) {
+        String settingsJSON = getSettings();
+        try {
+            JSONArray array = new JSONArray(settingsJSON);
+            for (int i = 0; i < 3; i++) {
+                JSONObject curObject = array.getJSONObject(i);
+                String curType = curObject.getString("name");
+                if (curType.equals(type) &&
+                        curObject.getInt("level") > disableThr)
+                    return true;
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
     }
 
     public String makeGETRequest(String urlName){
