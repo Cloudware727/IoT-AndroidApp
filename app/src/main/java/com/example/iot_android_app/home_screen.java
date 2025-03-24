@@ -82,6 +82,13 @@ public class home_screen extends Fragment{
                         coffeeList.get(i).setName(curObject.getString("name"));
                         coffeeList.get(i).setCoffeeLevel(curObject.getInt("level"));
                     }
+                    //save names of tea and coffee
+                    SharedPreferences prefs = getContext().getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("name_first", coffeeList.get(0).getName());
+                    editor.putString("name_second", coffeeList.get(1).getName());
+                    editor.putString("name_third", coffeeList.get(2).getName());
+                    editor.apply(); // commit-waits until data is saved, apply-saves in the background
                     //re-initialize adapter for carousel
                     adapter = new CoffeeCarouselAdapter(coffeeList);
                     rvCoffeeCarousel.setAdapter(adapter);

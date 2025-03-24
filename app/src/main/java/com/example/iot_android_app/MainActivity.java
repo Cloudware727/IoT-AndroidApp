@@ -124,16 +124,19 @@ public class MainActivity extends AppCompatActivity {
                     String sugarLevel = (sugarid == 0) ? "Zero" : (sugarid == 1) ? "Little" : (sugarid == 2) ? "Sweet" : (sugarid == 3) ? "Extra" : "Could not load data";
                     //sugar id to text
                     int shotid = Integer.parseInt(progressData[2]);
-                    String shotSize = (shotid == 0) ? "Nuance" : (shotid == 1) ? "Refine" : (shotid == 2) ? "Amplify" : "Could not load data";
-
+                    String shotSize = (shotid == 1) ? "Nuance" : (shotid == 2) ? "Refine" : (shotid == 3) ? "Amplify" : "Could not load data";
+                    //name id to text
+                    int nameid = Integer.parseInt(progressData[0]);
+                    String nameAddName = (nameid == 1) ? "name_first" : (nameid == 2) ? "name_second" : (nameid == 3) ? "name_third" : "name_first";
+                    String name = prefs.getString(nameAddName, "Your Tea");
                     // set all
                     progressBar.setProgress(Integer.parseInt(progressData[4]));
                     currentProgress.setText("Progress: " + progressData[4] +"%");
                     currentTemperature.setText("Current Temperature: " + progressData[5] +"°C");
-                    summaryName.setText("Name: " + progressData[0]);
+                    summaryName.setText("Name: " + name);
                     summaryShot.setText("Shot: " + shotSize);
                     summarySugar.setText("Sugar: " + sugarLevel);
-                    summaryTemperature.setText("Infusing Temperature: " + progressData[3] +"°C");
+                    summaryTemperature.setText("Infuse Temperature: " + progressData[3] +"°C");
 
                     progressCard.setVisibility(View.VISIBLE);
                 } else {
