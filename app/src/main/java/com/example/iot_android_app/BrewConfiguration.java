@@ -3,6 +3,8 @@ package com.example.iot_android_app;
 import static android.app.PendingIntent.getActivity;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import android.widget.Toast;
@@ -85,5 +87,32 @@ public class BrewConfiguration {
 
             });
         }).start();
+    }
+    public void saveMachineOrderId(Activity activity, Context context){
+        new Thread(() -> {
+            DBHandler dbHandler = new DBHandler();
+            String response = dbHandler.getOrderIdFromMachine();
+            if (activity == null) return;
+
+            activity.runOnUiThread(() -> {
+                if (response.isEmpty()) {Toast.makeText(activity, "Server Error, failed to load data!", Toast.LENGTH_SHORT).show();return;}
+                try {
+                    JSONArray jsonResponse = new JSONArray(response);
+                    if (jsonResponse == null || jsonResponse.length() == 0) {Toast.makeText(activity, "Invalid server response! Please place the order again!", Toast.LENGTH_SHORT).show();return;}
+
+                    JSONObject curObject = jsonResponse.getJSONObject(0);
+                    int idTemp = (curObject.getInt("id"));
+                    SharedPreferences prefs = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putInt("current_order_id_m", idTemp);
+                    Log.e("test", "orderid: " + idTemp);
+                    editor.commit(); // commit-waits until data is saved, apply-saves in the background
+
+                } catch (JSONException e) {
+                    Toast.makeText(activity, "Error processing response.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }).start();
+
     }
 }

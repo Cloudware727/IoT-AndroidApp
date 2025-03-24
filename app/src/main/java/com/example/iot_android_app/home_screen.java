@@ -1,5 +1,7 @@
 package com.example.iot_android_app;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.google.android.material.button.MaterialButton;
@@ -8,12 +10,14 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.slider.Slider;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,6 +62,7 @@ public class home_screen extends Fragment{
         MaterialButton btnTempDecrease = view.findViewById(R.id.decreaseBtn);
         MaterialButton btnStart = view.findViewById(R.id.actionBtn);
         MaterialButton btnFav = view.findViewById(R.id.addfavBtn);
+        CardView progressCard = getActivity().findViewById(R.id.progressCard);
 
         //get name and level from database
         new Thread(() -> {
@@ -83,6 +88,7 @@ public class home_screen extends Fragment{
                     //set start button state
                     if (coffeeList.get(0).getCoffeeLevel() < 5) {btnStart.setEnabled(false);}
                     else {btnStart.setEnabled(true);}
+//                    updateStartButtonStateExternally();
 
                 } catch (JSONException e) {
                         Toast.makeText(getActivity(), "Error processing response.", Toast.LENGTH_SHORT).show();
@@ -118,8 +124,8 @@ public class home_screen extends Fragment{
                     // Now update your brewing configuration with the current hero card info
                     brewConfiguration.setCoffeeId(currentCoffee.getId());
                     brewConfiguration.setName(currentCoffee.getName());
-                    //update start button state - enable or disable
-                    if (currentCoffee.getCoffeeLevel() < startButtonDisableThresh) {btnStart.setEnabled(false);}
+                    // update start button state enable or disable
+                    if (coffeeList.get(pos).getCoffeeLevel() < startButtonDisableThresh) {btnStart.setEnabled(false);}
                     else {btnStart.setEnabled(true);}
                 }
             }
@@ -190,6 +196,12 @@ public class home_screen extends Fragment{
         // Start button listener
         btnStart.setOnClickListener(v -> {
             brewConfiguration.sendOrder(getActivity());
+            //save id of order machine table for current order
+            // Schedule the save after a delay (e.g., 3000 ms)
+            new Handler().postDelayed(() ->
+                    brewConfiguration.saveMachineOrderId(getActivity(), getContext()), 3000
+            );
+
         });
         // Favourites button listener
         btnFav.setOnClickListener(v -> {

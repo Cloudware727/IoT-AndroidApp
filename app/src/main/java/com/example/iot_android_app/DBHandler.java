@@ -37,6 +37,9 @@ public class DBHandler {
     private String getSettings = "https://studev.groept.be/api/a24ib2team102/get_settings";
     private String isFavorite = "https://studev.groept.be/api/a24ib2team102/in_favorites/";
     private String removeFavorite = "https://studev.groept.be/api/a24ib2team102/remove_favorite/";
+    private String getOrderIdFromMachineUrl = "https://studev.groept.be/api/a24ib2team102/get_latest_orderid";
+    private String getCurrentOrderInfoUrl = "https://studev.groept.be/api/a24ib2team102/get_current_order_info/";
+
 
     public String signUpUser(String username, String email, String password) {
         String requestUrl = SignUpUrl + "?username=" + username + "&password=" + password + "&email=" + email ;
@@ -71,6 +74,14 @@ public class DBHandler {
     public String getNameLevel(){
         return makeGETRequest(getNameLevelUrl);
     }
+    public String getOrderIdFromMachine(){
+        return makeGETRequest(getOrderIdFromMachineUrl);
+    }
+    public String getCurrentOrderInfo(int id){
+        String requestUrl = getCurrentOrderInfoUrl + id;
+        return makeGETRequest(requestUrl);
+    }
+
 
     public String getHistory(String user) {
         String url = getHistoryUrl + user;

@@ -37,7 +37,120 @@
     </com.google.android.material.bottomnavigation.BottomNavigationView>
 
 
+    <!-- Floating Expandable Progress Card -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/progressCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:cardBackgroundColor="@color/unselected_chip_color_used"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="@drawable/ripple_effect"
+        android:visibility="visible"
+        android:layout_margin="16dp"
+        app:cardElevation="10dp"
+        app:cardCornerRadius="10dp">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
 
+            <TextView
+                android:id="@+id/summaryHeading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="Order Summary"
+                android:textSize="25sp"
+                android:textColor="@color/coffee_brown"
+                android:gravity="center"
+                android:paddingBottom="1dp"
+                android:paddingTop="5dp"/>
+            <TextView
+                android:id="@+id/summaryName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="Name: "
+                android:textSize="16sp"
+                android:textColor="@color/coffee_brown"
+                android:paddingBottom="1dp"
+                android:paddingTop="5dp"/>
+            <TextView
+                android:id="@+id/summaryShot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="Shot: "
+                android:textSize="16sp"
+                android:textColor="@color/coffee_brown"
+                android:paddingBottom="1dp"
+                android:paddingTop="5dp"/>
+            <TextView
+                android:id="@+id/summarySugar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="Sugar: "
+                android:textSize="16sp"
+                android:textColor="@color/coffee_brown"
+                android:paddingBottom="1dp"
+                android:paddingTop="5dp"/>
+            <TextView
+                android:id="@+id/summaryTemperature"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="Infusing Temperature: 75°C"
+                android:textSize="16sp"
+                android:textColor="@color/coffee_brown"
+                android:paddingBottom="1dp"
+                android:paddingTop="5dp"/>
+
+            <!--divider line-->
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/coffee_brown"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="5dp"
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/currentTemperature"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="Current Temperature: 45°C"
+                android:textSize="20sp"
+                android:textColor="@color/coffee_brown"
+                android:paddingBottom="1dp"
+                android:paddingTop="5dp"/>
+            <TextView
+                android:id="@+id/currentProgress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="Progress: 1%"
+                android:textSize="20sp"
+                android:textColor="@color/coffee_brown"
+                android:paddingBottom="10dp"
+                android:paddingTop="1dp"/>
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:progressDrawable="@drawable/progress_bg"
+                android:layout_width="match_parent"
+                android:layout_height="16dp"
+                android:max="100"
+                android:progress="40"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
