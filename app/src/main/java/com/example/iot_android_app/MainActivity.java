@@ -20,6 +20,8 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.transition.TransitionManager;
+import androidx.transition.AutoTransition;
 
 import com.example.iot_android_app.databinding.ActivityMainBinding;
 
@@ -87,6 +89,9 @@ public class MainActivity extends AppCompatActivity {
         // Toggle expand/collapse
         progressCard.setOnClickListener(v -> {
             isExpanded = !isExpanded;
+            //smooth transition on expand-collapse
+            TransitionManager.beginDelayedTransition(progressCard, new AutoTransition());
+
             currentTemperature.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
             currentProgress.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
             summaryName.setVisibility(isExpanded ? View.VISIBLE : View.GONE);

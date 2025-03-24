@@ -48,7 +48,8 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     // Material3 (Latest version - check for updates)
     implementation("com.google.android.material:material:1.12.0")
-
     // ViewPager2
     implementation("androidx.viewpager2:viewpager2:1.0.0")
+    //for notifications
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 }

@@ -205,8 +205,10 @@ public class home_screen extends Fragment{
             brewConfiguration.sendOrder(getActivity());
             //save id of order machine table for current order
             // Schedule the save after a delay (e.g., 3000 ms)
-            new Handler().postDelayed(() ->
-                    brewConfiguration.saveMachineOrderId(getActivity(), getContext()), 1000
+            new Handler().postDelayed(() ->{
+                    brewConfiguration.saveMachineOrderId(getActivity(), getContext());
+                    btnStart.setEnabled(false);
+                    }, 1000
             );
 
         });

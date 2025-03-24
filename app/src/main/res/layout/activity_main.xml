@@ -67,6 +67,7 @@
                 android:visibility="gone"
                 android:text="Order Summary"
                 android:textSize="25sp"
+                android:textStyle="bold"
                 android:textColor="@color/coffee_brown"
                 android:gravity="center"
                 android:paddingBottom="1dp"
