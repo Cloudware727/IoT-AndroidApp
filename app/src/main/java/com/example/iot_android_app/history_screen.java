@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,13 +24,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class history_screen extends Fragment {
     private RecyclerView historyList;
     private ItemAdapter adapter;
     private List<orderModel> items;
-    private ArrayList<orderModel> orders;
     private int disableThr = 5;
 
     public history_screen() {
@@ -66,7 +63,6 @@ public class history_screen extends Fragment {
         String user = "shlok";
         loadHistory(db, user);
         db.startSettingsUpdater();
-        orders = new ArrayList<>();
         adapter = new ItemAdapter(items, new ItemAdapter.OnItemClickListener() {
             @Override
             public void favClick(View view, int position) {

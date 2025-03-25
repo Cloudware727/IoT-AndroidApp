@@ -39,7 +39,7 @@ public class DBHandler {
     private String getNameLevelUrl = "https://studev.groept.be/api/a24ib2team102/get_name_level";
     private String getHistoryUrl = "https://studev.groept.be/api/a24ib2team102/get_history_for_user/";
     private String getSettings = "https://studev.groept.be/api/a24ib2team102/get_settings";
-    private String isFavorite = "https://studev.groept.be/api/a24ib2team102/in_favorites/";
+    private String isFavorite = "https://studev.groept.be/api/a24ib2team102/in_fav/";
     private String removeFavorite = "https://studev.groept.be/api/a24ib2team102/remove_favorite/";
     private String getOrderIdFromMachineUrl = "https://studev.groept.be/api/a24ib2team102/get_latest_orderid";
     private String getCurrentOrderInfoUrl = "https://studev.groept.be/api/a24ib2team102/get_current_order_info/";
@@ -93,26 +93,20 @@ public class DBHandler {
     }
 
     public boolean switchFavorite(String user, String type, int shots, int sugar, int temp) {
-        String url = isFavorite + shots + '/' + sugar + '/' + temp;
-        String settingsJSON = makeGETRequest(url);
-        boolean alreadyFavorite = false;
-        int favoriteId = -1;
+        String url = isFavorite + shots + '/' + sugar + '/' + temp + '/' + user + '/' + type;
+        url = url.replaceAll(" ", "+");
+        String jsonString = makeGETRequest(url);
+        boolean in = false;
+        int id = -1;
         try {
-            JSONArray array = new JSONArray(settingsJSON);
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject curObject = array.getJSONObject(i);
-                if (curObject.getString("type").equals(type) && curObject.getString("user_id").equals(user)) {
-                    alreadyFavorite = true;
-                    favoriteId = curObject.getInt("id");
-                    break;
-                }
-            }
+            JSONObject obj = new JSONArray(jsonString).getJSONObject(0);
+            id = obj.getInt("id");
+            in = true;
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-
-        if (alreadyFavorite) {
-            makeGETRequest(removeFavorite + favoriteId);
+        if (in) {
+            makeGETRequest(removeFavorite + id);
             return false;
         } else {
             sendMyFavourite(type, shots, sugar, temp);
@@ -121,21 +115,15 @@ public class DBHandler {
     }
 
     public boolean isFavorite(String user, String type, int shots, int sugar, int T) {
-        String url = isFavorite + shots + '/' + sugar + '/' + T;
+        String url = isFavorite + shots + '/' + sugar + '/' + T + '/' + user + '/' + type;
+        url = url.replaceAll(" ", "+");
         String settingsJSON = makeGETRequest(url);
         try {
-            JSONArray array = new JSONArray(settingsJSON);
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject curObject = array.getJSONObject(i);
-                String curType = curObject.getString("type");
-                String curUser = curObject.getString("user_id");
-                if (curType.equals(type) && curUser.equals(user))
-                    return true;
-            }
+            new JSONArray(settingsJSON).getJSONObject(0);
+            return true;
         } catch (JSONException e) {
-            throw new RuntimeException(e);
+            return false;
         }
-        return false;
     }
 
     public void saveMachineOrderId(Activity activity, Context context) {
