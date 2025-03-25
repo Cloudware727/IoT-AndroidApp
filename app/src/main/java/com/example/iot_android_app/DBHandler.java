@@ -1,6 +1,11 @@
 package com.example.iot_android_app;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.Toast;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -24,7 +29,6 @@ public class DBHandler {
     private int disableThr = 5;
     private JSONArray settingsCache;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    private final int UPDATE_INTERVAL = 5000; // 5 seconds
 
     private String user = "shlok";
     private String SignUpUrl = "https://studev.groept.be/api/a24ib2team102/SignUpAppChecker/";
@@ -132,6 +136,34 @@ public class DBHandler {
             throw new RuntimeException(e);
         }
         return false;
+    }
+
+    public void saveMachineOrderId(Activity activity, Context context) {
+        new Thread(() -> {
+            String response = this.getOrderIdFromMachine();
+            if (activity == null) return;
+
+            activity.runOnUiThread(() -> {
+                if (response.isEmpty()) {
+                    Toast.makeText(activity, "Server Error, failed to load data!", Toast.LENGTH_SHORT).show();return;}
+                try {
+                    JSONArray jsonResponse = new JSONArray(response);
+                    if (jsonResponse == null || jsonResponse.length() == 0) {Toast.makeText(activity, "Invalid server response! Please place the order again!", Toast.LENGTH_SHORT).show();return;}
+
+                    JSONObject curObject = jsonResponse.getJSONObject(0);
+                    int idTemp = (curObject.getInt("id"));
+                    SharedPreferences prefs = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putInt("current_order_id_m", idTemp);
+                    Log.e("test", "orderid: " + idTemp);
+                    editor.commit(); // commit-waits until data is saved, apply-saves in the background
+
+                } catch (JSONException e) {
+                    Toast.makeText(activity, "Error processing response.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }).start();
+
     }
 
     public boolean canBeOrdered(String type) {

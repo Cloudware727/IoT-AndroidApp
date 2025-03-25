@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -79,7 +80,7 @@ public class history_screen extends Fragment {
                                 item.getShots() == clickedItem.getShots() &&
                                 item.getSugar() == clickedItem.getSugar() &&
                                 item.getTemp() == clickedItem.getTemp()) {
-                            item.setFavorite(isNowFavorite);  // Update favorite status
+                            item.setFavorite(isNowFavorite);
                         }
                     }
 
@@ -116,6 +117,10 @@ public class history_screen extends Fragment {
                         e.printStackTrace();
                     }
                 }).start();
+                new Handler().postDelayed(() ->{
+                            db.saveMachineOrderId(getActivity(), getContext());
+                        }, 1000
+                );
             }
         });
 
@@ -235,7 +240,11 @@ public class history_screen extends Fragment {
         }
 
         public int getFavIcon() {
-            return isFavorite ? R.drawable.remove_from_fav : R.drawable.save_to_fav_icon;
+            return isFavorite ? R.drawable.remove_from_fav : R.drawable.history_add_fav;
+        }
+
+        public int getReIcon() {
+            return canBeOrdered? R.drawable.redo_icon : R.drawable.redo_unav;
         }
     }
 
@@ -271,6 +280,7 @@ public class history_screen extends Fragment {
             textView.setMaxLines(5);
             textView.setEllipsize(TextUtils.TruncateAt.END);
             holder.buttonRe.setEnabled(curItem.isCanBeOrdered());
+            holder.buttonRe.setCompoundDrawablesWithIntrinsicBounds(curItem.getReIcon(), 0, 0, 0);
             holder.buttonFav.setCompoundDrawablesWithIntrinsicBounds(curItem.getFavIcon(), 0, 0, 0);
         }
 
