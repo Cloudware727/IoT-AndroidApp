@@ -134,9 +134,11 @@ public class MainActivity extends AppCompatActivity {
                     int nameid = Integer.parseInt(progressData[0]);
                     String nameAddName = (nameid == 1) ? "name_first" : (nameid == 2) ? "name_second" : (nameid == 3) ? "name_third" : "name_first";
                     String name = prefs.getString(nameAddName, "Your Tea");
+                    //current progress
+                    int p = 100-Integer.parseInt(progressData[4]);
                     // set all
-                    progressBar.setProgress(Integer.parseInt(progressData[4]));
-                    currentProgress.setText("Progress: " + progressData[4] +"%");
+                    progressBar.setProgress(p);
+                    currentProgress.setText("Progress: " + p +"%");
                     currentTemperature.setText("Current Temperature: " + progressData[5] +"°C");
                     summaryName.setText("Name: " + name);
                     summaryShot.setText("Shot: " + shotSize);
