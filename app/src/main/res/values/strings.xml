@@ -2,4 +2,9 @@
     <string name="app_name">Brewsta</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string-array name="dropdown_items">
+        <item>Dispenser 1</item>
+        <item>Dispenser 2</item>
+        <item>Dispenser 3</item>
+    </string-array>
 </resources>

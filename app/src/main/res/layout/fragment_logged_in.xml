@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    android:scrollbarStyle="insideOverlay"
+    android:fadeScrollbars="true">
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,29 +15,72 @@
     android:padding="24dp">
 
     <ImageView
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:src="@drawable/coffee_machine"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
         android:layout_marginBottom="24dp"
-        android:contentDescription="User Icon" />
+        android:contentDescription="User Icon"
+        android:src="@drawable/coffee_machine" />
 
     <TextView
         android:id="@+id/tv_welcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Welcome, User!"
+        android:layout_gravity="center"
         android:textSize="26sp"
         android:textStyle="bold"
         android:textColor="#333333"
         android:layout_marginBottom="40dp" />
 
-    <Button
-        android:id="@+id/btn_logout"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Logout"
-        android:background="@color/coffee_brown"
-        android:textColor="#FFFFFF"
-        android:textAllCaps="false"
-        android:padding="12dp" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Spinner for selecting dispenser -->
+
+        <!-- Single EditText for user input -->
+        <Spinner
+            android:id="@+id/spinner_dispenser"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginBottom="16dp"
+            android:background="@color/coffee_brown"
+            android:hint="Select Dispenser"
+            android:popupTheme="@style/SpinnerStyle" />
+
+        <EditText
+            android:id="@+id/myTextField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter text for the selected dispenser"
+            android:textColor="@color/coffee_brown"
+            android:visibility="gone" /> <!-- Initially hidden -->
+
+        <!-- Confirm Choice Button -->
+        <Button
+            android:id="@+id/btn_confirm_choice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Confirm Choice"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="24dp"
+            android:visibility="gone"
+            android:backgroundTint="#5EA661"/>
+
+        <Button
+            android:id="@+id/btn_logout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Logout"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="100dp"
+            android:visibility="visible"
+            android:backgroundTint="@color/coffee_brown"/>
+
+
+
+    </LinearLayout>
 </LinearLayout>
+</ScrollView>

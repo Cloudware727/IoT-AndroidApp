@@ -1,5 +1,7 @@
 package com.example.iot_android_app;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;
@@ -60,9 +62,9 @@ public class history_screen extends Fragment {
 
         DBHandler db = new DBHandler();
         items = new ArrayList<>();
-        //SharedPreferences prefs = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-        //String user = prefs.getString("username", "Guest");
-        String user = "shlok";
+        SharedPreferences prefs = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        String user = prefs.getString("username", "Guest");
+        //String user = "shlok";
         loadHistory(db, user);
         db.startSettingsUpdater();
         orders = new ArrayList<>();
@@ -125,7 +127,7 @@ public class history_screen extends Fragment {
         dividerItemDecoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.divider));
         historyList.addItemDecoration(dividerItemDecoration);
 
-        /*//checks if user is logged in
+        //checks if user is logged in
         prefs = requireActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         Boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
 
@@ -138,8 +140,7 @@ public class history_screen extends Fragment {
 
             // Inflate the layout for this fragment
             return view;
-        }*/
-        return view;
+        }
     }
 
     private void loadHistory(DBHandler db, String user) {
