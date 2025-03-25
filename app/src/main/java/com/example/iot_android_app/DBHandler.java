@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -44,7 +45,7 @@ public class DBHandler {
     private String getOrderIdFromMachineUrl = "https://studev.groept.be/api/a24ib2team102/get_latest_orderid";
     private String getCurrentOrderInfoUrl = "https://studev.groept.be/api/a24ib2team102/get_current_order_info/";
     private String checkIfMachineBusyUrl = "https://studev.groept.be/api/a24ib2team102/check_if_machine_busy";
-
+    private String getFavsList = "https://studev.groept.be/api/a24ib2team102/get_favs/";
 
     public String signUpUser(String username, String email, String password) {
         String requestUrl = SignUpUrl + "?username=" + username + "&password=" + password + "&email=" + email ;
@@ -207,6 +208,31 @@ public class DBHandler {
             e.printStackTrace();
         }
         return "";
+    }
+
+    public List<orderModel> getFavoritesList(String user) {
+        List<orderModel> list = new ArrayList<>();
+        String url = getFavsList + user;
+        url = url.replaceAll(" ", "+");
+        try {
+            String jsonStr = makeGETRequest(url);
+            JSONArray array = new JSONArray(jsonStr);
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject curObject = array.getJSONObject(i);
+                list.add(new orderModel(
+                        "no data",
+                        curObject.getString("type"),
+                        curObject.getInt("shot"),
+                        curObject.getInt("sugar"),
+                        curObject.getInt("temperature"),
+                        canBeOrdered(curObject.getString("type")),
+                        true
+                ));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     public void switchFavorite() {

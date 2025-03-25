@@ -1,12 +1,16 @@
 package com.example.iot_android_app;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +22,34 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class fav_screen extends Fragment {
     private List<orderModel> favs;
+    private DBHandler db;
+    private String user;
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private final Runnable refreshRunnable = new Runnable() {
+        @Override
+        public void run() {
+            loadDrinks();
+            handler.postDelayed(this, 5000);
+        }
+    };
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        handler.post(refreshRunnable);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        handler.removeCallbacks(refreshRunnable);
+    }
+
 
     public fav_screen() {}
 
@@ -41,9 +69,11 @@ public class fav_screen extends Fragment {
         TextView menuInfo = view.findViewById(R.id.menuInfo);
         ImageButton removeFav = view.findViewById(R.id.removeFromFav);
 
-        for (int i = 1; i <= 6; i++) {
-            int menuButtonId = getResources().getIdentifier("menuButton" + i, "id", requireContext().getPackageName());
-            int redoButtonId = getResources().getIdentifier("redoButton" + i, "id", requireContext().getPackageName());
+        loadDrinks();
+
+        for (int i = 1; i <= favs.size(); i++) {
+            @SuppressLint("DiscouragedApi") int menuButtonId = getResources().getIdentifier("menuButton" + i, "id", requireContext().getPackageName());
+            @SuppressLint("DiscouragedApi") int redoButtonId = getResources().getIdentifier("redoButton" + i, "id", requireContext().getPackageName());
             @SuppressLint("DiscouragedApi") int boxTextId = getResources().getIdentifier("boxText" + i, "id", requireContext().getPackageName());
 
             ImageButton menuButton = view.findViewById(menuButtonId);
@@ -51,7 +81,7 @@ public class fav_screen extends Fragment {
             TextView boxText = view.findViewById(boxTextId);
 
             setupMenu(menuButton, menuBox, menuName, menuInfo, removeFav, boxText);
-            setupRedoButton(redoButton, boxText.toString());
+            setupRedoButton(redoButton, favs.get(i));
         }
     }
 
@@ -75,21 +105,13 @@ public class fav_screen extends Fragment {
         });
     }
 
-    private void closeOtherMenus() {
-        for (int i = 1; i <= 6; i++) {
-            int menuBoxId = getResources().getIdentifier("menuBox" + i, "id", requireContext().getPackageName());
-            CardView menuBox = getView().findViewById(menuBoxId);
-            if (menuBox != null) {
-                menuBox.setVisibility(View.GONE);
-            }
-        }
-    }
-
-    private void setupRedoButton(ImageButton redoButton, String elementName) {
-        DBHandler db = new DBHandler();
+    private void setupRedoButton(ImageButton redoButton, orderModel model) {
+        redoButton.setImageResource(model.getReIcon());
         redoButton.setOnClickListener(view -> {
-            db.sendMyOrder();
-            Toast.makeText(requireContext(), "Redoing " + elementName, Toast.LENGTH_SHORT).show();
+            if (db.canBeOrdered(model.getType())) {
+                db.sendMyOrder();
+                Toast.makeText(requireContext(), model.getType() + " ordered", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
@@ -117,8 +139,11 @@ public class fav_screen extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        /*// Checks if user is logged in
+
         SharedPreferences prefs = requireActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        user = prefs.getString("username", "Guest");
+        db = new DBHandler();
+        favs = new ArrayList<>();
         Boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
 
         if (isLoggedIn == false) {
@@ -127,10 +152,14 @@ public class fav_screen extends Fragment {
                     .commit();
             return new View(requireContext());
         } else {
-
-            // Inflate the layout for this fragment
             return inflater.inflate(R.layout.fragment_fav_screen, container, false);
-        }*/
-        return inflater.inflate(R.layout.fragment_fav_screen, container, false);
+        }
+    }
+
+    public void loadDrinks() {
+        favs.clear();
+        new Thread(() -> {
+            favs = db.getFavoritesList(user);
+        }).start();
     }
 }
