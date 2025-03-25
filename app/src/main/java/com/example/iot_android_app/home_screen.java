@@ -39,6 +39,9 @@ public class home_screen extends Fragment{
     private List<Coffee> coffeeList;
     private LinearSnapHelper snapHelper;
     private int startButtonDisableThresh = 5;
+    //things required to run something on loop
+    private Handler handler = new Handler(); private Runnable runnable;
+    private int intervalMachineBusyCheck = 10000;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -132,6 +135,8 @@ public class home_screen extends Fragment{
                     brewConfiguration.setCoffeeId(currentCoffee.getId());
                     brewConfiguration.setName(currentCoffee.getName());
                     // update start button state enable or disable
+                    SharedPreferences prefs = getContext().getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
+                    int busyyy = prefs.getInt("machine_busy", 1);
                     if (coffeeList.get(pos).getCoffeeLevel() < startButtonDisableThresh) {btnStart.setEnabled(false);}
                     else {btnStart.setEnabled(true);}
                 }
@@ -202,22 +207,56 @@ public class home_screen extends Fragment{
         });
         // Start button listener
         btnStart.setOnClickListener(v -> {
-            brewConfiguration.sendOrder(getActivity());
-            //save id of order machine table for current order
-            // Schedule the save after a delay (e.g., 3000 ms)
-            new Handler().postDelayed(() ->{
-                    brewConfiguration.saveMachineOrderId(getActivity(), getContext());
-                    btnStart.setEnabled(false);
-                    }, 1000
-            );
+            //place order only if machine if not busy otherwise give toast
+            brewConfiguration.isMachineBusy(getActivity(), getContext());
+            SharedPreferences prefs = getContext().getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
+            int busyyy = prefs.getInt("machine_busy", 1);
+            if (busyyy == 1){
+                Toast.makeText(getActivity(), "Machine is busy! Please try again later!", Toast.LENGTH_SHORT).show();
+            } else {
+                brewConfiguration.sendOrder(getActivity());
+                //save id of order machine table for current order
+                new Handler().postDelayed(() -> {
+                            brewConfiguration.saveMachineOrderId(getActivity(), getContext());
+//                            btnStart.setEnabled(false);
+                        }, 1000
+                );
+            }
 
         });
         // Favourites button listener
         btnFav.setOnClickListener(v -> {
             brewConfiguration.sendFavourite(getActivity());
         });
+        // keep checking if machine is busy, then enable or disable start button
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                // get current coffee
+                View snappedView = snapHelper.findSnapView(layoutManager);
+                int pos = layoutManager.getPosition(snappedView);
+                Coffee currentCoffee = coffeeList.get(pos);
+                //get if machine is busy
+                brewConfiguration.isMachineBusy(getActivity(), getContext());
+                SharedPreferences prefs = getContext().getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
+                int busyyy = prefs.getInt("machine_busy", 1);
+                // take action
+                if (coffeeList.get(pos).getCoffeeLevel() < startButtonDisableThresh) {btnStart.setEnabled(false);}
+                else {btnStart.setEnabled(true);}
+                Log.d("Repeating", "Start button status updated");
+                handler.postDelayed(this, intervalMachineBusyCheck); // Repeat every 10 sec
+            }
+        };
+        handler.post(runnable); // Start running
+
 
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        handler.removeCallbacks(runnable); // Clean up when fragment view is destroyed
     }
 
 }

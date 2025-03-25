@@ -38,7 +38,7 @@
             android:textSize="50sp"
             android:letterSpacing="0.05"
             android:textStyle="bold"
-            android:fontFamily="@font/anton"
+            android:fontFamily="@font/actor"
             android:textColor="@android:color/white"
             android:layout_centerInParent="true"/>
     </RelativeLayout>
