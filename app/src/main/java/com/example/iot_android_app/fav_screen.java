@@ -1,5 +1,6 @@
 package com.example.iot_android_app;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -24,7 +25,7 @@ public class fav_screen extends Fragment {
 
     public fav_screen() {}
 
-    public static fav_screen newInstance(String param1, String param2) {
+    public static fav_screen newInstance() {
         fav_screen fragment = new fav_screen();
         Bundle args = new Bundle();
         fragment.setArguments(args);
@@ -43,7 +44,7 @@ public class fav_screen extends Fragment {
         for (int i = 1; i <= 6; i++) {
             int menuButtonId = getResources().getIdentifier("menuButton" + i, "id", requireContext().getPackageName());
             int redoButtonId = getResources().getIdentifier("redoButton" + i, "id", requireContext().getPackageName());
-            int boxTextId = getResources().getIdentifier("boxText" + i, "id", requireContext().getPackageName());
+            @SuppressLint("DiscouragedApi") int boxTextId = getResources().getIdentifier("boxText" + i, "id", requireContext().getPackageName());
 
             ImageButton menuButton = view.findViewById(menuButtonId);
             ImageButton redoButton = view.findViewById(redoButtonId);
