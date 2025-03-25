@@ -96,22 +96,18 @@ public class DBHandler {
         String url = isFavorite + shots + '/' + sugar + '/' + temp + '/' + user + '/' + type;
         url = url.replaceAll(" ", "+");
         String jsonString = makeGETRequest(url);
-        boolean in = false;
-        int id = -1;
         try {
             JSONObject obj = new JSONArray(jsonString).getJSONObject(0);
-            id = obj.getInt("id");
-            in = true;
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-        if (in) {
-            makeGETRequest(removeFavorite + id);
+            makeGETRequest(removeFavorite + obj.getInt("id"));
             return false;
-        } else {
+        } catch (JSONException e) {
             sendMyFavourite(type, shots, sugar, temp);
             return true;
         }
+    }
+
+    public void saveCurName() {
+
     }
 
     public boolean isFavorite(String user, String type, int shots, int sugar, int T) {
@@ -207,5 +203,13 @@ public class DBHandler {
             e.printStackTrace();
         }
         return "";
+    }
+
+    public void switchFavorite() {
+
+    }
+
+    public void sendMyOrder() {
+
     }
 }

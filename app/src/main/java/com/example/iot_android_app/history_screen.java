@@ -1,7 +1,5 @@
 package com.example.iot_android_app;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;
@@ -60,9 +58,9 @@ public class history_screen extends Fragment {
 
         DBHandler db = new DBHandler();
         items = new ArrayList<>();
-        SharedPreferences prefs = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-        String user = prefs.getString("username", "Guest");
-        //String user = "shlok";
+        /*SharedPreferences prefs = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        String user = prefs.getString("username", "Guest");*/
+        String user = "shlok";
         loadHistory(db, user);
         db.startSettingsUpdater();
         adapter = new ItemAdapter(items, new ItemAdapter.OnItemClickListener() {
@@ -128,7 +126,7 @@ public class history_screen extends Fragment {
         dividerItemDecoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.divider));
         historyList.addItemDecoration(dividerItemDecoration);
 
-        //checks if user is logged in
+        /*//checks if user is logged in
         prefs = requireActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         Boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
 
@@ -141,7 +139,8 @@ public class history_screen extends Fragment {
 
             // Inflate the layout for this fragment
             return view;
-        }
+        }*/
+        return view;
     }
 
     private void loadHistory(DBHandler db, String user) {
@@ -179,72 +178,6 @@ public class history_screen extends Fragment {
         }).start();
     }
 
-    private class orderModel {
-        private String type;
-        private int shots;
-        private int sugar;
-        private int temp;
-        private String date;
-        private boolean canBeOrdered;
-        private boolean isFavorite;
-
-        public orderModel(String date, String type, int shots, int sugar, int temp, boolean cbo, boolean fav) {
-            this.type = type;
-            this.date = date;
-            this.shots = shots;
-            this.sugar = sugar;
-            this.temp = temp;
-            canBeOrdered = cbo;
-            isFavorite = fav;
-        }
-
-        @Override
-        public String toString() {
-            return date + '\n' + type + " (" + shots + " shot" + (shots == 1?")":"s)") +
-                    "\nSugar level: " + sugar + "\nTemperature: " + temp + "\u00B0C";
-        }
-
-        public int getShots() {
-            return shots;
-        }
-
-        public int getSugar() {
-            return sugar;
-        }
-
-        public int getTemp() {
-            return temp;
-        }
-
-        public String getDate() {
-            return date;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public boolean isCanBeOrdered() {
-            return canBeOrdered;
-        }
-
-        public boolean isFavorite() {
-            return isFavorite;
-        }
-
-        public void setFavorite(boolean favorite) {
-            isFavorite = favorite;
-        }
-
-        public int getFavIcon() {
-            return isFavorite ? R.drawable.remove_from_fav : R.drawable.history_add_fav;
-        }
-
-        public int getReIcon() {
-            return canBeOrdered? R.drawable.redo_icon : R.drawable.redo_unav;
-        }
-    }
-
     public static class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder> {
 
         private List<orderModel> itemList;
@@ -276,7 +209,7 @@ public class history_screen extends Fragment {
             textView.setText(curItem.toString());
             textView.setMaxLines(5);
             textView.setEllipsize(TextUtils.TruncateAt.END);
-            holder.buttonRe.setEnabled(curItem.isCanBeOrdered());
+            holder.buttonRe.setEnabled(curItem.CanBeOrdered());
             holder.buttonRe.setCompoundDrawablesWithIntrinsicBounds(curItem.getReIcon(), 0, 0, 0);
             holder.buttonFav.setCompoundDrawablesWithIntrinsicBounds(curItem.getFavIcon(), 0, 0, 0);
         }
