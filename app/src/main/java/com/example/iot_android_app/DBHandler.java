@@ -1,6 +1,11 @@
 package com.example.iot_android_app;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.Toast;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -24,7 +29,6 @@ public class DBHandler {
     private int disableThr = 5;
     private JSONArray settingsCache;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    private final int UPDATE_INTERVAL = 5000; // 5 seconds
 
     private String user = "shlok";
     private String SignUpUrl = "https://studev.groept.be/api/a24ib2team102/SignUpAppChecker/";
@@ -35,7 +39,7 @@ public class DBHandler {
     private String getNameLevelUrl = "https://studev.groept.be/api/a24ib2team102/get_name_level";
     private String getHistoryUrl = "https://studev.groept.be/api/a24ib2team102/get_history_for_user/";
     private String getSettings = "https://studev.groept.be/api/a24ib2team102/get_settings";
-    private String isFavorite = "https://studev.groept.be/api/a24ib2team102/in_favorites/";
+    private String isFavorite = "https://studev.groept.be/api/a24ib2team102/in_fav/";
     private String removeFavorite = "https://studev.groept.be/api/a24ib2team102/remove_favorite/";
     private String getOrderIdFromMachineUrl = "https://studev.groept.be/api/a24ib2team102/get_latest_orderid";
     private String getCurrentOrderInfoUrl = "https://studev.groept.be/api/a24ib2team102/get_current_order_info/";
@@ -89,26 +93,20 @@ public class DBHandler {
     }
 
     public boolean switchFavorite(String user, String type, int shots, int sugar, int temp) {
-        String url = isFavorite + shots + '/' + sugar + '/' + temp;
-        String settingsJSON = makeGETRequest(url);
-        boolean alreadyFavorite = false;
-        int favoriteId = -1;
+        String url = isFavorite + shots + '/' + sugar + '/' + temp + '/' + user + '/' + type;
+        url = url.replaceAll(" ", "+");
+        String jsonString = makeGETRequest(url);
+        boolean in = false;
+        int id = -1;
         try {
-            JSONArray array = new JSONArray(settingsJSON);
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject curObject = array.getJSONObject(i);
-                if (curObject.getString("type").equals(type) && curObject.getString("user_id").equals(user)) {
-                    alreadyFavorite = true;
-                    favoriteId = curObject.getInt("id");
-                    break;
-                }
-            }
+            JSONObject obj = new JSONArray(jsonString).getJSONObject(0);
+            id = obj.getInt("id");
+            in = true;
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-
-        if (alreadyFavorite) {
-            makeGETRequest(removeFavorite + favoriteId);
+        if (in) {
+            makeGETRequest(removeFavorite + id);
             return false;
         } else {
             sendMyFavourite(type, shots, sugar, temp);
@@ -117,21 +115,43 @@ public class DBHandler {
     }
 
     public boolean isFavorite(String user, String type, int shots, int sugar, int T) {
-        String url = isFavorite + shots + '/' + sugar + '/' + T;
+        String url = isFavorite + shots + '/' + sugar + '/' + T + '/' + user + '/' + type;
+        url = url.replaceAll(" ", "+");
         String settingsJSON = makeGETRequest(url);
         try {
-            JSONArray array = new JSONArray(settingsJSON);
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject curObject = array.getJSONObject(i);
-                String curType = curObject.getString("type");
-                String curUser = curObject.getString("user_id");
-                if (curType.equals(type) && curUser.equals(user))
-                    return true;
-            }
+            new JSONArray(settingsJSON).getJSONObject(0);
+            return true;
         } catch (JSONException e) {
-            throw new RuntimeException(e);
+            return false;
         }
-        return false;
+    }
+
+    public void saveMachineOrderId(Activity activity, Context context) {
+        new Thread(() -> {
+            String response = this.getOrderIdFromMachine();
+            if (activity == null) return;
+
+            activity.runOnUiThread(() -> {
+                if (response.isEmpty()) {
+                    Toast.makeText(activity, "Server Error, failed to load data!", Toast.LENGTH_SHORT).show();return;}
+                try {
+                    JSONArray jsonResponse = new JSONArray(response);
+                    if (jsonResponse == null || jsonResponse.length() == 0) {Toast.makeText(activity, "Invalid server response! Please place the order again!", Toast.LENGTH_SHORT).show();return;}
+
+                    JSONObject curObject = jsonResponse.getJSONObject(0);
+                    int idTemp = (curObject.getInt("id"));
+                    SharedPreferences prefs = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putInt("current_order_id_m", idTemp);
+                    Log.e("test", "orderid: " + idTemp);
+                    editor.commit(); // commit-waits until data is saved, apply-saves in the background
+
+                } catch (JSONException e) {
+                    Toast.makeText(activity, "Error processing response.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }).start();
+
     }
 
     public boolean canBeOrdered(String type) {

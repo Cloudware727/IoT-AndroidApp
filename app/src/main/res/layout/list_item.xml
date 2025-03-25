@@ -30,7 +30,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
-        android:backgroundTint="@color/coffee_brown"
+        android:backgroundTint="#D5C5B8"
         android:drawableLeft="@drawable/save_to_fav_icon"
         android:gravity="center_horizontal"
         android:padding="26dp"
@@ -42,6 +42,7 @@
     <Button
         android:id="@+id/historyRe"
         android:layout_width="90dp"
+        android:backgroundTint="#D5C5B8"
         android:layout_height="0dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="3dp"
