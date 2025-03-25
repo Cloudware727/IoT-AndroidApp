@@ -43,6 +43,7 @@ public class DBHandler {
     private String removeFavorite = "https://studev.groept.be/api/a24ib2team102/remove_favorite/";
     private String getOrderIdFromMachineUrl = "https://studev.groept.be/api/a24ib2team102/get_latest_orderid";
     private String getCurrentOrderInfoUrl = "https://studev.groept.be/api/a24ib2team102/get_current_order_info/";
+    private String checkIfMachineBusyUrl = "https://studev.groept.be/api/a24ib2team102/check_if_machine_busy";
 
 
     public String signUpUser(String username, String email, String password) {
@@ -80,6 +81,9 @@ public class DBHandler {
     }
     public String getOrderIdFromMachine(){
         return makeGETRequest(getOrderIdFromMachineUrl);
+    }
+    public String checkIfMachineBusy(){
+        return makeGETRequest(checkIfMachineBusyUrl);
     }
     public String getCurrentOrderInfo(int id){
         String requestUrl = getCurrentOrderInfoUrl + id;
