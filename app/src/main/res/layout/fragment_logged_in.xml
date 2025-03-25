@@ -75,7 +75,7 @@
             android:layout_height="wrap_content"
             android:text="Logout"
             android:textColor="#FFFFFF"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="20dp"
             android:visibility="visible"
             android:backgroundTint="@color/coffee_brown"/>
 
