@@ -154,10 +154,10 @@ public class fav_screen extends Fragment {
                 ViewGroup box = view.findViewById(boxId);
 
                 try {
-                    orderModel cur = favs.get(i);
+                    orderModel cur = favs.get(i-1);
+                    boxText.setText(cur.getAlias());
                     setupRedoButton(redoButton, cur);
                     setupMenu(cur, menuButton, menuBox, menuName, menuInfo, removeFav, boxText);
-                    boxText.setText(cur.getType());
                 } catch (Exception e) {
                     redoButton.setEnabled(false);
                     redoButton.setImageResource(R.drawable.redo_unav);

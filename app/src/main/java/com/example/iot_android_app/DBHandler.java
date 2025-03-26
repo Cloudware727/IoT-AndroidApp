@@ -222,7 +222,7 @@ public class DBHandler {
                         curObject.getInt("sugar"),
                         curObject.getInt("temperature"),
                         canBeOrdered(curObject.getString("type")),
-                        true
+                        true, curObject.getString("alias")
                 ));
             }
         } catch (JSONException e) {
