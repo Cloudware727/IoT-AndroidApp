@@ -68,20 +68,22 @@ public class fav_screen extends Fragment {
         loadDrinks(view);
     }
 
-    private void setupMenu(ImageButton menuButton, CardView menuBox, EditText menuName, TextView menuInfo, ImageButton removeFromFav, TextView boxText) {
-        DBHandler db = new DBHandler();
+    private void setupMenu(orderModel order, ImageButton menuButton, CardView menuBox, EditText menuName, TextView menuInfo, ImageButton removeFromFav, TextView boxText) {
         menuButton.setOnClickListener(view -> {
             menuBox.setVisibility(View.VISIBLE);
             menuName.setText(boxText.getText().toString());
-            menuInfo.setText("Details about " + boxText.getText().toString());
+            menuInfo.setText(order.toStringNoDate());
 
             removeFromFav.setOnClickListener(v -> {
-                db.switchFavorite();//menuName.getText().toString());
-                Toast.makeText(requireContext(), "Updated favorites for " + menuName.getText().toString(), Toast.LENGTH_SHORT).show();
+                new Thread(() -> {
+                    db.switchFavorite(user, order.getType(), order.getShots(), order.getSugar(), order.getTemp());
+                }).start();
+                Toast.makeText(requireContext(), menuName.getText().toString() + " removed from favorite", Toast.LENGTH_SHORT).show();
             });
 
             menuName.setOnFocusChangeListener((v, hasFocus) -> {
                 if (!hasFocus) {
+                    //TODO: save name method
                     db.saveCurName();//menuName.getText().toString());
                 }
             });
@@ -154,7 +156,7 @@ public class fav_screen extends Fragment {
                 try {
                     orderModel cur = favs.get(i);
                     setupRedoButton(redoButton, cur);
-                    setupMenu(menuButton, menuBox, menuName, menuInfo, removeFav, boxText);
+                    setupMenu(cur, menuButton, menuBox, menuName, menuInfo, removeFav, boxText);
                     boxText.setText(cur.getType());
                 } catch (Exception e) {
                     redoButton.setEnabled(false);

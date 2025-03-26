@@ -38,6 +38,11 @@ public class orderModel {
                 "\nSugar level: " + sugar + "\nTemperature: " + temp + "\u00B0C";
     }
 
+    public String toStringNoDate() {
+        return type + " (" + shots + " shot" + (shots == 1?")":"s)") +
+                "\nSugar level: " + sugar + "\nTemperature: " + temp + "\u00B0C";
+    }
+
     public int getShots() {
         return shots;
     }

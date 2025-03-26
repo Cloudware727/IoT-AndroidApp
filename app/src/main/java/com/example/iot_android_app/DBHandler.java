@@ -182,10 +182,6 @@ public class DBHandler {
         }, 0, 5, TimeUnit.SECONDS); // Runs every 5 seconds
     }
 
-    public String getDrinkById(int id) {
-        return makeGETRequest("https://studev.groept.be/api/a24ib2team102/get_drink_by_id/" + id);
-    }
-
     public String makeGETRequest(String urlName){
         BufferedReader rd = null;
         StringBuilder sb = null;
@@ -233,10 +229,6 @@ public class DBHandler {
             e.printStackTrace();
         }
         return list;
-    }
-
-    public void switchFavorite() {
-
     }
 
     public void sendMyOrder() {
