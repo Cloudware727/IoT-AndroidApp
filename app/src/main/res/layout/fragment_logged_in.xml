@@ -45,16 +45,18 @@
             android:id="@+id/spinner_dispenser"
             android:layout_width="match_parent"
             android:layout_height="40dp"
+            android:layout_marginTop="24dp"
             android:layout_marginBottom="16dp"
             android:background="@color/coffee_brown"
-            android:hint="Select Dispenser"
-            android:popupTheme="@style/SpinnerStyle" />
+            android:textColor= "@color/white"
+            android:popupTheme="@style/CustomSpinnerStyle"/>
 
         <EditText
             android:id="@+id/myTextField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter text for the selected dispenser"
+            android:hint="Pick New Tea for Dispenser"
+            android:textSize="14sp"
             android:textColor="@color/coffee_brown"
             android:visibility="gone" /> <!-- Initially hidden -->
 

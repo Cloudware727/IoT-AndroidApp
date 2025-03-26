@@ -52,11 +52,23 @@ public class LoggedInFragment extends Fragment {
         tvWelcome.setText("Welcome, " + username + "!");
 
         // Set up the Spinner with data (Dispenser 1, 2, 3)
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                getContext(),
-                R.array.dropdown_items, // Array in strings.xml
-                android.R.layout.simple_spinner_dropdown_item
-        );
+        // Reference to Spinner
+
+        // Create ArrayAdapter with custom layout for selected item and dropdown items
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(getContext(),
+                R.layout.spinner_selected_item,  // Custom layout for the selected item
+                getResources().getStringArray(R.array.dropdown_items)) {  // Use the dropdown items array
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                // Inflate and customize the dropdown item view using the custom layout for dropdown items
+                View view = super.getDropDownView(position, convertView, parent);
+                TextView textView = (TextView) view;
+                return view;
+            }
+        };
+
+// Set the adapter to the spinner
         spinner.setAdapter(adapter);
 
         // Handle item selection from Spinner
@@ -64,16 +76,18 @@ public class LoggedInFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 // Position corresponds to the selected item index
-                // For example, position 0 corresponds to "Dispenser 1", position 1 to "Dispenser 2", and position 2 to "Dispenser 3"
 
-                // Get the selected dispenser number (position + 1 to map to 1, 2, or 3)
-                int dispenserNumber = position + 1;
-                // Show the selected dispenser number
-                Toast.makeText(getContext(), "Selected Dispenser: " + dispenserNumber, Toast.LENGTH_SHORT).show();
+                int dispenserNumber = position;
 
                 // Show the EditText and Confirm Choice button when an item is selected
-                myTextField.setVisibility(View.VISIBLE);
-                confirm.setVisibility(View.VISIBLE);
+                if(dispenserNumber != 0) {
+                    myTextField.setVisibility(View.VISIBLE);
+                    confirm.setVisibility(View.VISIBLE);
+                }
+                else{
+                    myTextField.setVisibility(View.GONE);
+                    confirm.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -100,15 +114,14 @@ public class LoggedInFragment extends Fragment {
             editor.apply();
 
             // Get the selected dispenser number (again based on the position in the spinner)
-            int dispenserNumber = spinner.getSelectedItemPosition() + 1;  // Position + 1 for dispenser number
+            int dispenserNumber = spinner.getSelectedItemPosition() ;  // Position + 1 for dispenser number
             String requestUrl = "https://studev.groept.be/api/a24ib2team102/ChangeTeaName/" + text + "/" + dispenserNumber;
 
             // Make the GET request
             new Thread(() -> dbHandler.makeGETRequest(requestUrl)).start();
             Toast.makeText(getContext(), "Dispenser "+dispenserNumber+" has been changed", Toast.LENGTH_SHORT).show();
+            myTextField.setText("");
 
-            // Optionally, hide the confirm button again or perform other actions
-            confirm.setVisibility(View.GONE);
         });
 
         // Logout Button
