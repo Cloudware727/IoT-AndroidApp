@@ -8,6 +8,7 @@ public class orderModel {
     private String date;
     private boolean canBeOrdered;
     private boolean isFavorite;
+    private String alias;
 
     public orderModel(String date, String type, int shots, int sugar, int temp, boolean cbo, boolean fav) {
         this.type = type;
@@ -17,6 +18,18 @@ public class orderModel {
         this.temp = temp;
         canBeOrdered = cbo;
         isFavorite = fav;
+        alias = null;
+    }
+
+    public orderModel(String date, String type, int shots, int sugar, int temp, boolean cbo, boolean fav, String alias) {
+        this.type = type;
+        this.date = date;
+        this.shots = shots;
+        this.sugar = sugar;
+        this.temp = temp;
+        canBeOrdered = cbo;
+        isFavorite = fav;
+        this.alias = alias;
     }
 
     @Override
@@ -27,6 +40,10 @@ public class orderModel {
 
     public int getShots() {
         return shots;
+    }
+
+    public String getAlias() {
+        return alias;
     }
 
     public int getSugar() {
