@@ -9,13 +9,10 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -24,33 +21,11 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class fav_screen extends Fragment {
     private List<orderModel> favs;
     private DBHandler db;
     private String user;
-    private final Handler handler = new Handler(Looper.getMainLooper());
-    private final Runnable refreshRunnable = new Runnable() {
-        @Override
-        public void run() {
-            loadDrinks(getView());
-            handler.postDelayed(this, 5000);
-        }
-    };
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        handler.post(refreshRunnable);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        handler.removeCallbacks(refreshRunnable);
-    }
-
 
     public fav_screen() {}
 
@@ -79,6 +54,7 @@ public class fav_screen extends Fragment {
                     db.switchFavorite(user, order.getType(), order.getShots(), order.getSugar(), order.getTemp());
                 }).start();
                 Toast.makeText(requireContext(), menuName.getText().toString() + " removed from favorite", Toast.LENGTH_SHORT).show();
+                loadDrinks(getView());
             });
 
             menuName.setOnFocusChangeListener((v, hasFocus) -> {
@@ -127,10 +103,8 @@ public class fav_screen extends Fragment {
         favs.clear();
         new Thread(() -> {
             List<orderModel> newFavs = db.getFavoritesList(user);
-            handler.post(() -> {
-                favs.addAll(newFavs);
-                updateUI(view);
-            });
+            favs.addAll(newFavs);
+            updateUI(view);
         }).start();
     }
 
