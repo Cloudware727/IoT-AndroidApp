@@ -1,8 +1,5 @@
 package com.example.iot_android_app;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -39,34 +36,54 @@ public class fav_screen extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         loadDrinks(view);
     }
 
     private void setupMenu(orderModel order, ImageButton menuButton, CardView menuBox, EditText menuName, TextView menuInfo, ImageButton removeFromFav, TextView boxText) {
         menuButton.setOnClickListener(view -> {
-            menuBox.setVisibility(View.VISIBLE);
-            menuName.setText(boxText.getText().toString());
-            menuInfo.setText(order.toStringNoDate());
+            if (menuBox.getVisibility() == View.VISIBLE && menuInfo.getText().toString().equals(order.toStringNoDate()))
+                menuBox.setVisibility(View.GONE);
+            else {
+                menuBox.setVisibility(View.VISIBLE);
+                menuName.setText(boxText.getText().toString());
+                menuInfo.setText(order.toStringNoDate());
+            }
+
+            menuName.setOnEditorActionListener((v, actionId, event) -> {
+                menuName.clearFocus();
+                return false;
+            });
 
             removeFromFav.setOnClickListener(v -> {
                 new Thread(() -> {
                     db.switchFavorite(user, order.getType(), order.getShots(), order.getSugar(), order.getTemp());
+                    View rootView = getView();
+                    if (rootView != null) {
+                        requireActivity().runOnUiThread(() -> loadDrinks(rootView));
+                    }
                 }).start();
+                menuBox.setVisibility(View.GONE);
                 Toast.makeText(requireContext(), menuName.getText().toString() + " removed from favorite", Toast.LENGTH_SHORT).show();
-                loadDrinks(getView());
+
             });
 
             menuName.setOnFocusChangeListener((v, hasFocus) -> {
                 if (!hasFocus) {
-                    //TODO: save name method
-                    db.saveCurName();//menuName.getText().toString());
+                    new Thread(() -> {
+                        db.saveCurAlias(user, order.getType(), order.getShots(), order.getSugar(), order.getTemp(),
+                                menuName.getText().toString());
+                        View rootView = getView();
+                        if (rootView != null) {
+                            requireActivity().runOnUiThread(() -> loadDrinks(rootView));
+                        }
+                    }).start();
                 }
             });
         });
     }
 
     private void setupRedoButton(ImageButton redoButton, orderModel model) {
+        if (!model.CanBeOrdered()) redoButton.setVisibility(View.GONE);
         redoButton.setImageResource(model.getReIcon());
         redoButton.setOnClickListener(view -> {
             if (db.canBeOrdered(model.getType())) {

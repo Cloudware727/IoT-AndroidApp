@@ -13,8 +13,6 @@ import java.util.concurrent.TimeUnit;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -22,9 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class DBHandler {
     private int disableThr = 5;
@@ -46,6 +42,7 @@ public class DBHandler {
     private String getCurrentOrderInfoUrl = "https://studev.groept.be/api/a24ib2team102/get_current_order_info/";
     private String checkIfMachineBusyUrl = "https://studev.groept.be/api/a24ib2team102/check_if_machine_busy";
     private String getFavsList = "https://studev.groept.be/api/a24ib2team102/get_favs/";
+    private String saveAlias = "https://studev.groept.be/api/a24ib2team102/save_alias/";
 
     public String signUpUser(String username, String email, String password) {
         String requestUrl = SignUpUrl + "?username=" + username + "&password=" + password + "&email=" + email ;
@@ -111,8 +108,10 @@ public class DBHandler {
         }
     }
 
-    public void saveCurName() {
-
+    public void saveCurAlias(String user, String type, int shots, int sugar, int T, String alias) {
+        String url = saveAlias + alias + '/' + shots + '/' + sugar + '/' + T + '/' + user + '/' + type;
+        url = url.replaceAll(" ", "+");
+        makeGETRequest(url);
     }
 
     public boolean isFavorite(String user, String type, int shots, int sugar, int T) {
