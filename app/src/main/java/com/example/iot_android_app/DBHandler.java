@@ -178,7 +178,7 @@ public class DBHandler {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }, 0, 5, TimeUnit.SECONDS); // Runs every 5 seconds
+        }, 0, 3, TimeUnit.SECONDS); // Runs every 5 seconds
     }
 
     public String makeGETRequest(String urlName){

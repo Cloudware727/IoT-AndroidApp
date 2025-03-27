@@ -83,7 +83,6 @@ public class fav_screen extends Fragment {
     }
 
     private void setupRedoButton(ImageButton redoButton, orderModel model) {
-        if (!model.CanBeOrdered()) redoButton.setVisibility(View.GONE);
         redoButton.setImageResource(model.getReIcon());
         redoButton.setOnClickListener(view -> {
             if (db.canBeOrdered(model.getType())) {
@@ -102,6 +101,7 @@ public class fav_screen extends Fragment {
         user = prefs.getString("username", "Guest");*/
         user = "shlok";
         db = new DBHandler();
+        db.startSettingsUpdater();
         favs = new ArrayList<>();
         /*Boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
 
