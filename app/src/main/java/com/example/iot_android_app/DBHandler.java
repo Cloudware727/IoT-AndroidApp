@@ -88,7 +88,6 @@ public class DBHandler {
         return makeGETRequest(requestUrl);
     }
 
-
     public String getHistory(String user) {
         String url = getHistoryUrl + user;
         return makeGETRequest(url);
@@ -228,9 +227,5 @@ public class DBHandler {
             e.printStackTrace();
         }
         return list;
-    }
-
-    public void sendMyOrder() {
-
     }
 }

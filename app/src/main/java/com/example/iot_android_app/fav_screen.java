@@ -1,5 +1,7 @@
 package com.example.iot_android_app;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -86,7 +88,8 @@ public class fav_screen extends Fragment {
         redoButton.setImageResource(model.getReIcon());
         redoButton.setOnClickListener(view -> {
             if (db.canBeOrdered(model.getType())) {
-                db.sendMyOrder();
+                // TODO: make separate method in DBHandler
+                //db.sendMyOrder();
                 Toast.makeText(requireContext(), model.getType() + " ordered", Toast.LENGTH_SHORT).show();
             }
         });
@@ -97,13 +100,12 @@ public class fav_screen extends Fragment {
                              Bundle savedInstanceState) {
 
 
-        /*SharedPreferences prefs = requireActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-        user = prefs.getString("username", "Guest");*/
-        user = "shlok";
+        SharedPreferences prefs = requireActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        user = prefs.getString("username", "Guest");
         db = new DBHandler();
         db.startSettingsUpdater();
         favs = new ArrayList<>();
-        /*Boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
+        Boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
 
         if (isLoggedIn == false) {
             requireActivity().getSupportFragmentManager().beginTransaction()
@@ -112,8 +114,7 @@ public class fav_screen extends Fragment {
             return new View(requireContext());
         } else {
             return inflater.inflate(R.layout.fragment_fav_screen, container, false);
-        }*/
-        return inflater.inflate(R.layout.fragment_fav_screen, container, false);
+        }
     }
 
     public void loadDrinks(View view) {
@@ -126,7 +127,6 @@ public class fav_screen extends Fragment {
     }
 
     private void updateUI(View view) {
-
         CardView menuBox = view.findViewById(R.id.menuBox);
         EditText menuName = view.findViewById(R.id.menuName);
         TextView menuInfo = view.findViewById(R.id.menuInfo);
