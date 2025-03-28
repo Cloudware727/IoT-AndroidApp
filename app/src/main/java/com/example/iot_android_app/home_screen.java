@@ -47,6 +47,8 @@ public class home_screen extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        DBHandler db = new DBHandler();
         View view = inflater.inflate(R.layout.fragment_home_screen, container, false);
 
         coffeeList = new ArrayList<>();
@@ -54,11 +56,12 @@ public class home_screen extends Fragment {
         coffeeList.add(new Coffee(2, " ", 100, R.drawable.lemon_tea_bg));
         coffeeList.add(new Coffee(3, " ", 100, R.drawable.instant_coffee_bg));
 
+        SharedPreferences prefs = getContext().getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
         BrewConfiguration brewConfiguration = new BrewConfiguration(1, coffeeList.get(0).getName(), 2, 0, 70);
 
-        SharedPreferences prefs = requireActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        SharedPreferences prefs2 = requireActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         for (int i = 0; i < coffeeList.size(); i++) {
-            String path = prefs.getString("dispenser_image_path_" + i, null);
+            String path = prefs2.getString("dispenser_image_path_" + i, null);
             if (path != null) {
                 coffeeList.get(i).setImagePath(path);
             }
@@ -72,7 +75,6 @@ public class home_screen extends Fragment {
 
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
         sharedViewModel.getImagePath().observe(getViewLifecycleOwner(), image -> {
-            SharedPreferences prefs2 = requireActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
             int positionToUpdate = prefs2.getInt("spinner_position", 0) - 1;
             String imagePath = prefs2.getString("dispenser_image_path_" + positionToUpdate, null);
 
@@ -109,6 +111,7 @@ public class home_screen extends Fragment {
                     editor.putString("name_second", coffeeList.get(1).getName());
                     editor.putString("name_third", coffeeList.get(2).getName());
                     editor.apply();
+                    brewConfiguration.setName(coffeeList.get(0).getName());
                     adapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     Toast.makeText(getActivity(), "Error processing response.", Toast.LENGTH_SHORT).show();
@@ -190,17 +193,19 @@ public class home_screen extends Fragment {
         });
 
         btnStart.setOnClickListener(v -> {
+
             brewConfiguration.isMachineBusy(getActivity(), getContext());
             int busyyy = prefs.getInt("machine_busy", 1);
+            Log.e("test", "busyy var: " + busyyy);
             if (busyyy == 1) {
                 Toast.makeText(getActivity(), "Machine is busy! Please try again later!", Toast.LENGTH_SHORT).show();
             } else {
-                brewConfiguration.sendOrder(getActivity());
+                brewConfiguration.sendOrder(getActivity(), getContext());
                 new Handler().postDelayed(() -> brewConfiguration.saveMachineOrderId(getActivity(), getContext()), 1000);
             }
         });
 
-        btnFav.setOnClickListener(v -> brewConfiguration.sendFavourite(getActivity()));
+        btnFav.setOnClickListener(v -> brewConfiguration.sendFavourite(getActivity(), getContext()));
 
         runnable = new Runnable() {
             @Override
@@ -208,7 +213,7 @@ public class home_screen extends Fragment {
                 View snappedView = snapHelper.findSnapView(layoutManager);
                 int pos = layoutManager.getPosition(snappedView);
                 Coffee currentCoffee = coffeeList.get(pos);
-                brewConfiguration.isMachineBusy(getActivity(), getContext());
+                db.isMachineBusy(getActivity(), getContext());
                 int busyyy = prefs.getInt("machine_busy", 1);
                 MaterialButton btnStart = getView().findViewById(R.id.actionBtn);
                 btnStart.setEnabled(coffeeList.get(pos).getCoffeeLevel() >= startButtonDisableThresh);
