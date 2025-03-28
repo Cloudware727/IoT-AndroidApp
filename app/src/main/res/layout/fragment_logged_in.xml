@@ -71,6 +71,39 @@
             android:visibility="gone"
             android:backgroundTint="#5EA661"/>
 
+        <!-- Upload Zone for Tea Image -->
+        <TextView
+            android:id="@+id/tv_upload_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Upload New Tea Image"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:textColor="#333"
+            android:textSize="20sp"
+            android:layout_marginTop="24dp" />
+
+        <ImageView
+            android:id="@+id/iv_tea_preview"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="12dp"
+            android:src="@drawable/upload_icon"
+            android:layout_gravity="center"
+            android:background="#E0E0E0"
+            android:scaleType="centerCrop"
+            android:contentDescription="Preview of uploaded image" />
+
+        <Button
+            android:id="@+id/btn_upload_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Choose Image"
+            android:layout_gravity="center"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="12dp"
+            android:backgroundTint="@color/coffee_brown" />
+
         <Button
             android:id="@+id/btn_logout"
             android:layout_width="match_parent"

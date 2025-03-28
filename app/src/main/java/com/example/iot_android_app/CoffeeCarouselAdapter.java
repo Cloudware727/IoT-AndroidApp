@@ -1,8 +1,8 @@
 package com.example.iot_android_app;
 
-import static android.app.PendingIntent.getActivity;
-
-import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +17,6 @@ public class CoffeeCarouselAdapter extends RecyclerView.Adapter<CoffeeCarouselAd
 
     private List<Coffee> coffeeList;
 
-
     public CoffeeCarouselAdapter(List<Coffee> coffeeList) {
         this.coffeeList = coffeeList;
     }
@@ -29,26 +28,31 @@ public class CoffeeCarouselAdapter extends RecyclerView.Adapter<CoffeeCarouselAd
                 .inflate(R.layout.item_coffee_card, parent, false);
         return new ViewHolder(view);
     }
-    
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Coffee coffee = coffeeList.get(position);
         holder.tvCoffeeName.setText(coffee.getName());
 
-        // Set the background image dynamically for each coffee
-        holder.ivBackground.setImageResource(coffee.getBg());
+        String path = coffee.getImagePath();
+        if (path != null) {
+            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            if (bitmap != null) {
+                holder.ivBackground.setImageBitmap(bitmap);
+            } else {
+                holder.ivBackground.setImageResource(coffee.getImageResId());
+            }
+        } else {
+            holder.ivBackground.setImageResource(coffee.getImageResId());
+        }
 
-        // Adjust the tinted overlay height based on the coffee level (percentage)
-        int coffeeLevel = coffee.getCoffeeLevel(); // Get coffee level (0 to 100)
 
-        // Calculate the height of the tinted overlay based on the coffee level
+        // Adjust the tinted overlay height based on the coffee level (0 to 100)
+        int coffeeLevel = coffee.getCoffeeLevel();
         ViewGroup.LayoutParams params = holder.viewCoffeeFill.getLayoutParams();
         float density = holder.itemView.getContext().getResources().getDisplayMetrics().density;
-        params.height = (int) Math.round((100-coffeeLevel)*2.5*density);  // 250dp is the height of the card
+        params.height = (int) Math.round((100 - coffeeLevel) * 2.5 * density);
         holder.viewCoffeeFill.setLayoutParams(params);
-
-
     }
 
     @Override
@@ -69,4 +73,3 @@ public class CoffeeCarouselAdapter extends RecyclerView.Adapter<CoffeeCarouselAd
         }
     }
 }
-

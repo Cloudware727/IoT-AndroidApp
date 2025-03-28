@@ -3,48 +3,28 @@ package com.example.iot_android_app;
 public class Coffee {
     private int id;
     private String name;
-    private int coffeeLevel; // Percentage of coffee remaining (0 to 100)
-    private int bg;
+    private int coffeeLevel;
+    private int imageResId;
+    private String imagePath;
 
-    // Constructor
-    public Coffee(int id, String name, int coffeeLevel, int bg) {
+    public Coffee(int id, String name, int level, int imageResId) {
         this.id = id;
         this.name = name;
-        this.coffeeLevel = coffeeLevel;
-        this.bg = bg;
+        this.coffeeLevel = level;
+        this.imageResId = imageResId;
     }
 
-    // Getters and Setters
-    public int getId() {
-        return id;
-    }
+    // Getters and setters
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public int getCoffeeLevel() { return coffeeLevel; }
+    public int getImageResId() { return imageResId; }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public void setName(String name) { this.name = name; }
+    public void setCoffeeLevel(int level) { this.coffeeLevel = level; }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getCoffeeLevel() {
-        return coffeeLevel;
-    }
-
-    public void setCoffeeLevel(int coffeeLevel) {
-        this.coffeeLevel = coffeeLevel;
-    }
-
-    public int getBg() {
-        return bg;
-    }
-
-    public void setBg(int bg) {
-        this.bg = bg;
-    }
+    // Image URI (optional)
+    // ✅ Image path
+    public void setImagePath(String path) { this.imagePath = path; }
+    public String getImagePath() { return imagePath; }
 }
-
