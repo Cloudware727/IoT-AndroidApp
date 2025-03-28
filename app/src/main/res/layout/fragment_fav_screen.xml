@@ -13,6 +13,7 @@ tools:context=".MainActivity">
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:text="Chosen Ones"
+    android:textColor="@color/coffee_brown"
     android:textSize="28sp"
     android:textStyle="bold"
     android:gravity="center"

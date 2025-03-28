@@ -211,7 +211,7 @@ public class home_screen extends Fragment{
         // Start button listener
         btnStart.setOnClickListener(v -> {
             //place order only if machine if not busy otherwise give toast
-            brewConfiguration.isMachineBusy(getActivity(), getContext());
+            db.isMachineBusy(getActivity(), getContext());
             SharedPreferences prefs = getContext().getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
             int busyyy = prefs.getInt("machine_busy", 1);
             if (busyyy == 1){
@@ -240,7 +240,7 @@ public class home_screen extends Fragment{
                 int pos = layoutManager.getPosition(snappedView);
                 Coffee currentCoffee = coffeeList.get(pos);
                 //get if machine is busy
-                brewConfiguration.isMachineBusy(getActivity(), getContext());
+                db.isMachineBusy(getActivity(), getContext());
                 SharedPreferences prefs = getContext().getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
                 int busyyy = prefs.getInt("machine_busy", 1);
                 // take action

@@ -152,6 +152,34 @@ public class DBHandler {
 
     }
 
+    public void isMachineBusy(Activity activity, Context context){
+        new Thread(() -> {
+            DBHandler dbHandler = new DBHandler();
+            String response = dbHandler.checkIfMachineBusy();
+            if (activity == null) return;
+
+            activity.runOnUiThread(() -> {
+                if (response.isEmpty()) {Toast.makeText(activity, "Server Error, failed to load data!", Toast.LENGTH_SHORT).show();return;}
+                try {
+                    JSONArray jsonResponse = new JSONArray(response);
+                    if (jsonResponse == null || jsonResponse.length() == 0) {Toast.makeText(activity, "Invalid server response!", Toast.LENGTH_SHORT).show();return;}
+
+                    JSONObject curObject = jsonResponse.getJSONObject(0);
+                    int busyyy = (curObject.getInt("has_data"));
+                    SharedPreferences prefs = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putInt("machine_busy", busyyy);
+                    Log.e("test", "machine is busy: " + busyyy);
+                    editor.commit(); // commit-waits until data is saved, apply-saves in the background
+
+                } catch (JSONException e) {
+                    Toast.makeText(activity, "Error processing response.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }).start();
+
+    }
+
     public boolean canBeOrdered(String type) {
         if (settingsCache == null) return false;
         try {
