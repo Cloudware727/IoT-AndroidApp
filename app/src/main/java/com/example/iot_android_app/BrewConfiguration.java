@@ -49,10 +49,12 @@ public class BrewConfiguration {
         this.name = name;
     }
 
-    public void sendOrder(Activity activity){
+    public void sendOrder(Activity activity, Context context){
         new Thread(() -> {
+            SharedPreferences prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+            String user = prefs.getString("username", "Guest");
             DBHandler dbHandler = new DBHandler();
-            String response = dbHandler.sendMyOrder(coffeeId, name, sugarLevel, shotSize, temperature).replaceAll("\\n", "");
+            String response = dbHandler.sendMyOrder(coffeeId, name, sugarLevel, shotSize, temperature, user).replaceAll("\\n", "");
 
             if (activity == null) return;
 
@@ -69,10 +71,12 @@ public class BrewConfiguration {
         }).start();
     }
 
-    public void sendFavourite(Activity activity){
+    public void sendFavourite(Activity activity, Context context){
         new Thread(() -> {
             DBHandler dbHandler = new DBHandler();
-            String response = dbHandler.sendMyFavourite(name, shotSize, sugarLevel, temperature).replaceAll("\\n", "");
+            SharedPreferences prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+            String user = prefs.getString("username", "Guest");
+            String response = dbHandler.sendMyFavourite(name, shotSize, sugarLevel, temperature, user).replaceAll("\\n", "");
 
             if (activity == null) return;
 

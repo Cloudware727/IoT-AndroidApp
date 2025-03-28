@@ -101,7 +101,7 @@ public class history_screen extends Fragment {
                                         new BrewConfiguration(curObject.getInt("dispenser"),
                                         clickedItem.getType(), clickedItem.getShots(),
                                         clickedItem.getSugar(), clickedItem.getTemp());
-                                drink.sendOrder(getActivity());
+                                drink.sendOrder(getActivity(), getContext());
                                 return;
                             }
                         }

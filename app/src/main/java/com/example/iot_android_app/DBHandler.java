@@ -27,7 +27,6 @@ public class DBHandler {
     private JSONArray settingsCache;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-    private String user = "shlok";
     private String SignUpUrl = "https://studev.groept.be/api/a24ib2team102/SignUpAppChecker/";
     private String LoginUrl = "https://studev.groept.be/api/a24ib2team102/CheckLoginData/";
     private String sendOrderUrl = "https://studev.groept.be/api/a24ib2team102/send_order/";
@@ -60,7 +59,7 @@ public class DBHandler {
     }
 
     //send current data to orders and order_machine
-    public String sendMyOrder(int id, String name, int sugar, int shot, int temp){
+    public String sendMyOrder(int id, String name, int sugar, int shot, int temp, String user){
         String sqlDateTime = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
         String requestUrl = sendOrderUrl + name + "/" + sugar + "/" + shot + "/" + temp + "/" + user + "/" + sqlDateTime;
         requestUrl = requestUrl.replaceAll(" ", "+");
@@ -68,7 +67,7 @@ public class DBHandler {
         return  makeGETRequest(requestUrl)+makeGETRequest(requestUrl2);
     }
     //send the favourite
-    public String sendMyFavourite(String name, int shot, int sugar, int temp){
+    public String sendMyFavourite(String name, int shot, int sugar, int temp, String user){
         String requestUrl = sendFavouriteUrl + user + "/" + name + "/" + shot + "/" + sugar + "/" + temp;
         requestUrl = requestUrl.replaceAll(" ", "+");
         return  makeGETRequest(requestUrl);
@@ -102,7 +101,7 @@ public class DBHandler {
             makeGETRequest(removeFavorite + obj.getInt("id"));
             return false;
         } catch (JSONException e) {
-            sendMyFavourite(type, shots, sugar, temp);
+            sendMyFavourite(type, shots, sugar, temp, user);
             return true;
         }
     }

@@ -108,7 +108,7 @@ public class fav_screen extends Fragment {
                                         new BrewConfiguration(curObject.getInt("dispenser"),
                                                 model.getType(), model.getShots(),
                                                 model.getSugar(), model.getTemp());
-                                drink.sendOrder(getActivity());
+                                drink.sendOrder(getActivity(), getContext());
                                 return;
                             }
                         }

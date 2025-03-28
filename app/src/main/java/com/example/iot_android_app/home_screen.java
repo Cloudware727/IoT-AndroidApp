@@ -67,6 +67,23 @@ public class home_screen extends Fragment{
         MaterialButton btnFav = view.findViewById(R.id.addfavBtn);
         CardView progressCard = getActivity().findViewById(R.id.progressCard);
 
+        // Initialize coffee list with some sample coffee data
+        coffeeList = new ArrayList<>();
+        coffeeList.add(new Coffee(1, " ", 100, R.drawable.herbs_tea_bg));  // Background image res ID as well
+        coffeeList.add(new Coffee(2, " ", 100, R.drawable.lemon_tea_bg));
+        coffeeList.add(new Coffee(3, " ", 100, R.drawable.instant_coffee_bg));
+
+        //make brewingConfiguration object
+        BrewConfiguration brewConfiguration = new BrewConfiguration(1, coffeeList.get(0).getName(), 2,0,70);
+
+        // Set up the adapter with a callback for long press
+        adapter = new CoffeeCarouselAdapter(coffeeList);
+        rvCoffeeCarousel.setAdapter(adapter);
+
+        // Attach LinearSnapHelper for snapping behavior
+        PagerSnapHelper snapHelper = new PagerSnapHelper();
+        snapHelper.attachToRecyclerView(rvCoffeeCarousel);
+
         //get name and level from database
         new Thread(() -> {
             DBHandler dbHandler = new DBHandler();
@@ -92,6 +109,7 @@ public class home_screen extends Fragment{
                     editor.putString("name_second", coffeeList.get(1).getName());
                     editor.putString("name_third", coffeeList.get(2).getName());
                     editor.apply(); // commit-waits until data is saved, apply-saves in the background
+                    brewConfiguration.setName(coffeeList.get(0).getName());
                     //re-initialize adapter for carousel
                     adapter = new CoffeeCarouselAdapter(coffeeList);
                     rvCoffeeCarousel.setAdapter(adapter);
@@ -105,22 +123,7 @@ public class home_screen extends Fragment{
                     }
             });
         }).start();
-        // Initialize coffee list with some sample coffee data
-        coffeeList = new ArrayList<>();
-        coffeeList.add(new Coffee(1, " ", 100, R.drawable.herbs_tea_bg));  // Background image res ID as well
-        coffeeList.add(new Coffee(2, " ", 100, R.drawable.lemon_tea_bg));
-        coffeeList.add(new Coffee(3, " ", 100, R.drawable.instant_coffee_bg));
 
-        //make brewingConfiguration object
-        BrewConfiguration brewConfiguration = new BrewConfiguration(1, coffeeList.get(0).getName(), 2,0,70);
-
-        // Set up the adapter with a callback for long press
-        adapter = new CoffeeCarouselAdapter(coffeeList);
-        rvCoffeeCarousel.setAdapter(adapter);
-
-        // Attach LinearSnapHelper for snapping behavior
-        PagerSnapHelper snapHelper = new PagerSnapHelper();
-        snapHelper.attachToRecyclerView(rvCoffeeCarousel);
 
         // listen for scroll events to update your brewing config
         rvCoffeeCarousel.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -214,7 +217,7 @@ public class home_screen extends Fragment{
             if (busyyy == 1){
                 Toast.makeText(getActivity(), "Machine is busy! Please try again later!", Toast.LENGTH_SHORT).show();
             } else {
-                brewConfiguration.sendOrder(getActivity());
+                brewConfiguration.sendOrder(getActivity(), getContext());
                 //save id of order machine table for current order
                 new Handler().postDelayed(() -> {
                             brewConfiguration.saveMachineOrderId(getActivity(), getContext());
@@ -226,7 +229,7 @@ public class home_screen extends Fragment{
         });
         // Favourites button listener
         btnFav.setOnClickListener(v -> {
-            brewConfiguration.sendFavourite(getActivity());
+            brewConfiguration.sendFavourite(getActivity(), getContext());
         });
         // keep checking if machine is busy, then enable or disable start button
         runnable = new Runnable() {
