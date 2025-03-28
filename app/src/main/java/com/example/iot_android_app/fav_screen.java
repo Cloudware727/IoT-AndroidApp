@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +30,7 @@ public class fav_screen extends Fragment {
     private List<orderModel> favs;
     private DBHandler db;
     private String user;
+    private int disableThr = 5;
 
     public fav_screen() {}
 
@@ -88,8 +94,32 @@ public class fav_screen extends Fragment {
         redoButton.setImageResource(model.getReIcon());
         redoButton.setOnClickListener(view -> {
             if (db.canBeOrdered(model.getType())) {
-                // TODO: make separate method in DBHandler
-                //db.sendMyOrder();
+                new Thread(() -> {
+                    String settingsJSON = db.getSettings();
+                    try {
+                        JSONArray array = new JSONArray(settingsJSON);
+                        for (int i = 0; i < 3; i++) {
+                            JSONObject curObject = array.getJSONObject(i);
+                            String neededType = model.getType();
+                            String curType = curObject.getString("name");
+                            if (curType.equals(neededType) &&
+                                    curObject.getInt("level") > disableThr) {
+                                BrewConfiguration drink =
+                                        new BrewConfiguration(curObject.getInt("dispenser"),
+                                                model.getType(), model.getShots(),
+                                                model.getSugar(), model.getTemp());
+                                drink.sendOrder(getActivity());
+                                return;
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+                new Handler().postDelayed(() ->{
+                            db.saveMachineOrderId(getActivity(), getContext());
+                        }, 1000
+                );
                 Toast.makeText(requireContext(), model.getType() + " ordered", Toast.LENGTH_SHORT).show();
             }
         });
