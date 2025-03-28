@@ -27,7 +27,6 @@ public class DBHandler {
     private JSONArray settingsCache;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-    private String user = "shlok";
     private String SignUpUrl = "https://studev.groept.be/api/a24ib2team102/SignUpAppChecker/";
     private String LoginUrl = "https://studev.groept.be/api/a24ib2team102/CheckLoginData/";
     private String sendOrderUrl = "https://studev.groept.be/api/a24ib2team102/send_order/";
@@ -60,7 +59,7 @@ public class DBHandler {
     }
 
     //send current data to orders and order_machine
-    public String sendMyOrder(int id, String name, int sugar, int shot, int temp){
+    public String sendMyOrder(int id, String name, int sugar, int shot, int temp, String user){
         String sqlDateTime = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
         String requestUrl = sendOrderUrl + name + "/" + sugar + "/" + shot + "/" + temp + "/" + user + "/" + sqlDateTime;
         requestUrl = requestUrl.replaceAll(" ", "+");
@@ -68,7 +67,7 @@ public class DBHandler {
         return  makeGETRequest(requestUrl)+makeGETRequest(requestUrl2);
     }
     //send the favourite
-    public String sendMyFavourite(String name, int shot, int sugar, int temp){
+    public String sendMyFavourite(String name, int shot, int sugar, int temp, String user){
         String requestUrl = sendFavouriteUrl + user + "/" + name + "/" + shot + "/" + sugar + "/" + temp;
         requestUrl = requestUrl.replaceAll(" ", "+");
         return  makeGETRequest(requestUrl);
@@ -88,7 +87,6 @@ public class DBHandler {
         return makeGETRequest(requestUrl);
     }
 
-
     public String getHistory(String user) {
         String url = getHistoryUrl + user;
         return makeGETRequest(url);
@@ -103,7 +101,7 @@ public class DBHandler {
             makeGETRequest(removeFavorite + obj.getInt("id"));
             return false;
         } catch (JSONException e) {
-            sendMyFavourite(type, shots, sugar, temp);
+            sendMyFavourite(type, shots, sugar, temp, user);
             return true;
         }
     }
@@ -154,13 +152,41 @@ public class DBHandler {
 
     }
 
+    public void isMachineBusy(Activity activity, Context context){
+        new Thread(() -> {
+            DBHandler dbHandler = new DBHandler();
+            String response = dbHandler.checkIfMachineBusy();
+            if (activity == null) return;
+
+            activity.runOnUiThread(() -> {
+                if (response.isEmpty()) {Toast.makeText(activity, "Server Error, failed to load data!", Toast.LENGTH_SHORT).show();return;}
+                try {
+                    JSONArray jsonResponse = new JSONArray(response);
+                    if (jsonResponse == null || jsonResponse.length() == 0) {Toast.makeText(activity, "Invalid server response!", Toast.LENGTH_SHORT).show();return;}
+
+                    JSONObject curObject = jsonResponse.getJSONObject(0);
+                    int busyyy = (curObject.getInt("has_data"));
+                    SharedPreferences prefs = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putInt("machine_busy", busyyy);
+                    Log.e("test", "machine is busy: " + busyyy);
+                    editor.commit(); // commit-waits until data is saved, apply-saves in the background
+
+                } catch (JSONException e) {
+                    Toast.makeText(activity, "Error processing response.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }).start();
+
+    }
+
     public boolean canBeOrdered(String type) {
         if (settingsCache == null) return false;
         try {
             for (int i = 0; i < settingsCache.length(); i++) {
                 JSONObject curObject = settingsCache.getJSONObject(i);
                 if (curObject.getString("name").equals(type) &&
-                        curObject.getInt("level") > disableThr) {
+                        curObject.getInt("level") >= disableThr) {
                     return true;
                 }
             }
@@ -228,9 +254,5 @@ public class DBHandler {
             e.printStackTrace();
         }
         return list;
-    }
-
-    public void sendMyOrder() {
-
     }
 }

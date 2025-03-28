@@ -1,5 +1,7 @@
 package com.example.iot_android_app;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;
@@ -26,16 +28,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class history_screen extends Fragment {
-    private RecyclerView historyList;
     private ItemAdapter adapter;
     private List<orderModel> items;
-    private int disableThr = 5;
+    private String user;
+    private DBHandler db;
+    private final int disableThr = 5;
 
-    public history_screen() {
-        // Required empty public constructor
-    }
+    public history_screen() {}
 
-    public static history_screen newInstance(String param1, String param2) {
+    public static history_screen newInstance() {
         history_screen fragment = new history_screen();
         Bundle args = new Bundle();
         fragment.setArguments(args);
@@ -51,17 +52,15 @@ public class history_screen extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_history_screen, container, false);
-        View buttonsView = inflater.inflate(R.layout.list_item, container, false);
-        historyList = view.findViewById(R.id.historyList);
+        RecyclerView historyList = view.findViewById(R.id.historyList);
 
         historyList.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        DBHandler db = new DBHandler();
+        db = new DBHandler();
         items = new ArrayList<>();
-        /*SharedPreferences prefs = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-        String user = prefs.getString("username", "Guest");*/
-        String user = "shlok";
-        loadHistory(db, user);
+        SharedPreferences prefs = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        user = prefs.getString("username", "Guest");
+        loadHistory();
         db.startSettingsUpdater();
         adapter = new ItemAdapter(items, new ItemAdapter.OnItemClickListener() {
             @Override
@@ -81,7 +80,7 @@ public class history_screen extends Fragment {
                     }
 
                     if (getActivity() == null) return;
-                    getActivity().runOnUiThread(() -> adapter.notifyDataSetChanged()); // Refresh entire list
+                    getActivity().runOnUiThread(() -> adapter.notifyDataSetChanged());
                 }).start();
             }
 
@@ -97,12 +96,12 @@ public class history_screen extends Fragment {
                             String neededType = clickedItem.getType();
                             String curType = curObject.getString("name");
                             if (curType.equals(neededType) &&
-                                    curObject.getInt("level") > disableThr) {
+                                    curObject.getInt("level") >= disableThr) {
                                 BrewConfiguration drink =
                                         new BrewConfiguration(curObject.getInt("dispenser"),
                                         clickedItem.getType(), clickedItem.getShots(),
                                         clickedItem.getSugar(), clickedItem.getTemp());
-                                drink.sendOrder(getActivity());
+                                drink.sendOrder(getActivity(), getContext());
                                 return;
                             }
                         }
@@ -126,31 +125,29 @@ public class history_screen extends Fragment {
         dividerItemDecoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.divider));
         historyList.addItemDecoration(dividerItemDecoration);
 
-        /*//checks if user is logged in
         prefs = requireActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-        Boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
+        boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
 
-        if (isLoggedIn == false) {
+        if (!isLoggedIn) {
             requireActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.frame_layout, new BlockedScreen())
                     .commit();
             return new View(requireContext());
         } else {
-
-            // Inflate the layout for this fragment
             return view;
-        }*/
-        return view;
+        }
     }
 
-    private void loadHistory(DBHandler db, String user) {
+    private void loadHistory() {
         new Thread(() -> {
             String historyJSON = db.getHistory(user);
-            List<orderModel> newOrders = new ArrayList<>();
+            if (historyJSON == null || historyJSON.isEmpty()) return;
 
+            List<orderModel> newOrders = new ArrayList<>();
             try {
                 JSONArray array = new JSONArray(historyJSON);
-                for (int i = 0; i < array.length(); i++) {
+                int length = array.length();
+                for (int i = 0; i < length; i++) {
                     JSONObject curObject = array.getJSONObject(i);
                     newOrders.add(new orderModel(
                             curObject.getString("orderTime").substring(5, 16),
@@ -164,6 +161,15 @@ public class history_screen extends Fragment {
                                     curObject.getInt("sugar"),
                                     curObject.getInt("temperature"))
                     ));
+
+                    if (i % 5 == 0) {  // Update UI every 5 items for smoother experience
+                        List<orderModel> partialList = new ArrayList<>(newOrders);
+                        getActivity().runOnUiThread(() -> {
+                            items.clear();
+                            items.addAll(partialList);
+                            adapter.notifyDataSetChanged();
+                        });
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -232,13 +238,13 @@ public class history_screen extends Fragment {
                 buttonFav.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        listener.favClick(v, getAdapterPosition()); // Notify button click
+                        listener.favClick(v, getAdapterPosition());
                     }
                 });
                 buttonRe.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        listener.reClick(v, getAdapterPosition()); // Notify button click
+                        listener.reClick(v, getAdapterPosition());
                     }
                 });
             }
