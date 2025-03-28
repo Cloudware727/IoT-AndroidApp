@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -60,6 +61,7 @@ public class history_screen extends Fragment {
         items = new ArrayList<>();
         SharedPreferences prefs = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         user = prefs.getString("username", "Guest");
+        db.isMachineBusy(getActivity(), getContext());
         loadHistory();
         db.startSettingsUpdater();
         adapter = new ItemAdapter(items, new ItemAdapter.OnItemClickListener() {
@@ -87,6 +89,11 @@ public class history_screen extends Fragment {
             @Override
             public void reClick(View view, int position) {
                 orderModel clickedItem = items.get(position);
+                SharedPreferences prefs = getContext().getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
+                if (prefs.getInt("machine_busy", 1) == 1){
+                    Toast.makeText(getActivity(), "Machine is busy! Please try again later!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 new Thread(() -> {
                     String settingsJSON = db.getSettings();
                     try {

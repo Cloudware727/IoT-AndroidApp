@@ -93,6 +93,11 @@ public class fav_screen extends Fragment {
     private void setupRedoButton(ImageButton redoButton, orderModel model) {
         redoButton.setImageResource(model.getReIcon());
         redoButton.setOnClickListener(view -> {
+            SharedPreferences prefs = getContext().getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
+            if (prefs.getInt("machine_busy", 1) == 1){
+                Toast.makeText(getActivity(), "Machine is busy! Please try again later!", Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (db.canBeOrdered(model.getType())) {
                 new Thread(() -> {
                     String settingsJSON = db.getSettings();
