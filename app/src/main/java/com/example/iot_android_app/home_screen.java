@@ -195,12 +195,12 @@ public class home_screen extends Fragment {
             if (busyyy == 1) {
                 Toast.makeText(getActivity(), "Machine is busy! Please try again later!", Toast.LENGTH_SHORT).show();
             } else {
-                brewConfiguration.sendOrder(getActivity());
+                brewConfiguration.sendOrder(getActivity(), getContext());
                 new Handler().postDelayed(() -> brewConfiguration.saveMachineOrderId(getActivity(), getContext()), 1000);
             }
         });
 
-        btnFav.setOnClickListener(v -> brewConfiguration.sendFavourite(getActivity()));
+        btnFav.setOnClickListener(v -> brewConfiguration.sendFavourite(getActivity(), getContext()));
 
         runnable = new Runnable() {
             @Override
