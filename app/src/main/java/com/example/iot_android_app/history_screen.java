@@ -96,7 +96,7 @@ public class history_screen extends Fragment {
                             String neededType = clickedItem.getType();
                             String curType = curObject.getString("name");
                             if (curType.equals(neededType) &&
-                                    curObject.getInt("level") > disableThr) {
+                                    curObject.getInt("level") >= disableThr) {
                                 BrewConfiguration drink =
                                         new BrewConfiguration(curObject.getInt("dispenser"),
                                         clickedItem.getType(), clickedItem.getShots(),

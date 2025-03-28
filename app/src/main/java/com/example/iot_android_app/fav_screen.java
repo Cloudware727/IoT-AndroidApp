@@ -103,7 +103,7 @@ public class fav_screen extends Fragment {
                             String neededType = model.getType();
                             String curType = curObject.getString("name");
                             if (curType.equals(neededType) &&
-                                    curObject.getInt("level") > disableThr) {
+                                    curObject.getInt("level") >= disableThr) {
                                 BrewConfiguration drink =
                                         new BrewConfiguration(curObject.getInt("dispenser"),
                                                 model.getType(), model.getShots(),

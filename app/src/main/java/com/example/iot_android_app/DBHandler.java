@@ -158,7 +158,7 @@ public class DBHandler {
             for (int i = 0; i < settingsCache.length(); i++) {
                 JSONObject curObject = settingsCache.getJSONObject(i);
                 if (curObject.getString("name").equals(type) &&
-                        curObject.getInt("level") > disableThr) {
+                        curObject.getInt("level") >= disableThr) {
                     return true;
                 }
             }
