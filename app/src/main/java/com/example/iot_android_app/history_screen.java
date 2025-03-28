@@ -59,7 +59,7 @@ public class history_screen extends Fragment {
         db = new DBHandler();
         items = new ArrayList<>();
         SharedPreferences prefs = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-        String user = prefs.getString("username", "Guest");
+        user = prefs.getString("username", "Guest");
         loadHistory();
         db.startSettingsUpdater();
         adapter = new ItemAdapter(items, new ItemAdapter.OnItemClickListener() {
