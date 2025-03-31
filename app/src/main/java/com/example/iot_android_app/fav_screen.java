@@ -4,6 +4,7 @@
     import android.content.SharedPreferences;
     import android.os.Bundle;
 
+    import androidx.activity.OnBackPressedCallback;
     import androidx.annotation.Nullable;
     import androidx.cardview.widget.CardView;
     import androidx.fragment.app.Fragment;
@@ -143,6 +144,13 @@
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+
+            requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    // Do nothing to disable back/swipe-back
+                }
+            });
 
             SharedPreferences prefs = requireActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = prefs.edit();

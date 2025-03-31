@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.core.content.ContextCompat;
 
 import androidx.annotation.NonNull;
@@ -55,6 +56,14 @@ public class history_screen extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Do nothing to disable back/swipe-back
+            }
+        });
+
         View view = inflater.inflate(R.layout.fragment_history_screen, container, false);
         RecyclerView historyList = view.findViewById(R.id.historyList);
 
