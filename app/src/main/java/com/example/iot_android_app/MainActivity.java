@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView progressMessage;
     private boolean isExpanded = false;
     private Handler handler = new Handler();
-    private int progressUpdateInterval = 10000;
+    private int progressUpdateInterval = 5000;
     String[] progressData = new String[6];
     private boolean progressCompletionShowed = false;
 
@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
                     // set all
                     progressBar.setProgress(p);
                     currentProgress.setText("Progress: " + p +"%");
-                    currentTemperature.setText("Current Temperature: " + progressData[5] +"°C");
+                    currentTemperature.setText("Current Temperature: " + Math.round(Float.parseFloat(progressData[5])*10)/10.0f +"°C");
                     summaryName.setText("Name: " + name);
                     summaryShot.setText("Shot: " + shotSize);
                     summarySugar.setText("Sugar: " + sugarLevel);

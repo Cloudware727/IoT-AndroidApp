@@ -89,7 +89,7 @@ public class home_screen extends Fragment {
                 Log.d("home_screen", "Updating dispenser at position: " + positionToUpdate);
                 coffeeList.get(positionToUpdate).setImagePath(imagePath);
                 adapter.notifyItemChanged(positionToUpdate);
-                Toast.makeText(getContext(), "Image updated!", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "Image updated!", Toast.LENGTH_SHORT).show();
             } else {
                 Log.d("home_screen", "Invalid position or missing image path");
             }
@@ -157,7 +157,7 @@ public class home_screen extends Fragment {
         CardView progressCard = getActivity().findViewById(R.id.progressCard);
 
         cgShotSize.setOnCheckedStateChangeListener((group, checkedIds) -> {
-            int selectedShot = 2;
+            int selectedShot = 0;
             for (int checkedId : checkedIds) {
                 if (checkedId == R.id.shot_small) selectedShot = 1;
                 else if (checkedId == R.id.shot_med) selectedShot = 2;
