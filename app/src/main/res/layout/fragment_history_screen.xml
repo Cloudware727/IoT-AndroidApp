@@ -13,7 +13,7 @@
         android:layout_gravity="top|center_horizontal"
         android:layout_marginTop="40dp"
         android:text="Recent Orders"
-        android:textColor="@color/black"
+        android:textColor="@color/coffee_brown"
         android:textStyle="bold"
         android:textSize="28sp" />
 
