@@ -8,6 +8,8 @@ import androidx.core.content.ContextCompat;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,7 +37,8 @@ public class history_screen extends Fragment {
     private DBHandler db;
     private final int disableThr = 5;
 
-    public history_screen() {}
+    public history_screen() {
+    }
 
     public static history_screen newInstance() {
         history_screen fragment = new history_screen();
@@ -90,7 +93,7 @@ public class history_screen extends Fragment {
             public void reClick(View view, int position) {
                 orderModel clickedItem = items.get(position);
                 SharedPreferences prefs = getContext().getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
-                if (prefs.getInt("machine_busy", 1) == 1){
+                if (prefs.getInt("machine_busy", 1) == 1) {
                     Toast.makeText(getActivity(), "Machine is busy! Please try again later!", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -106,8 +109,8 @@ public class history_screen extends Fragment {
                                     curObject.getInt("level") >= disableThr) {
                                 BrewConfiguration drink =
                                         new BrewConfiguration(curObject.getInt("dispenser"),
-                                        clickedItem.getType(), clickedItem.getShots(),
-                                        clickedItem.getSugar(), clickedItem.getTemp());
+                                                clickedItem.getType(), clickedItem.getShots(),
+                                                clickedItem.getSugar(), clickedItem.getTemp());
                                 drink.sendOrder(getActivity(), getContext());
                                 return;
                             }
@@ -119,7 +122,7 @@ public class history_screen extends Fragment {
                         e.printStackTrace();
                     }
                 }).start();
-                new Handler().postDelayed(() ->{
+                new Handler().postDelayed(() -> {
                             db.saveMachineOrderId(getActivity(), getContext());
                         }, 1000
                 );
@@ -136,14 +139,14 @@ public class history_screen extends Fragment {
         boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
 
         if (!isLoggedIn) {
-            requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.frame_layout, new BlockedScreen())
-                    .commit();
-            return new View(requireContext());
-        } else {
-            return view;
+            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.frame_layout, new BlockedScreen());
+            transaction.commit();
         }
+        return view;
     }
+
 
     private void loadHistory() {
         new Thread(() -> {
@@ -171,6 +174,7 @@ public class history_screen extends Fragment {
 
                     if (i % 5 == 0) {  // Update UI every 5 items for smoother experience
                         List<orderModel> partialList = new ArrayList<>(newOrders);
+                        if (!isAdded()) return;
                         getActivity().runOnUiThread(() -> {
                             items.clear();
                             items.addAll(partialList);

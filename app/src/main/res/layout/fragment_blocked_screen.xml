@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="You do not have access to this feature"
-        android:textSize="21sp"
+        android:textSize="19sp"
         android:textStyle="bold"
         android:textColor="#333333"
         android:layout_marginBottom="40dp" />
@@ -38,10 +38,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Login"
-        android:background="@color/coffee_brown"
+        android:textSize="15sp"
+        android:background="@drawable/rounded_text"
         android:textColor="#FFFFFF"
         android:textAllCaps="false"
-        android:padding="12dp"
+        android:padding="8dp"
         android:layout_marginBottom="24dp" />
 
     <View
@@ -64,9 +65,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Sign Up"
-        android:background="@color/coffee_brown"
+        android:textSize="15sp"
+        android:background="@drawable/rounded_button"
         android:textColor="#FFFFFF"
         android:textAllCaps="false"
-        android:padding="12dp" />
+        android:padding="8dp" />
 
 </LinearLayout>
