@@ -1,14 +1,12 @@
 package com.example.iot_android_app;
 
-import android.animation.Animator;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.Button;
+import android.view.animation.Animation;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,9 +14,6 @@ import android.view.animation.AlphaAnimation;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -211,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
         // Step 1: Fade Out Background
         fadeOverlay.setVisibility(View.VISIBLE);
         AlphaAnimation fadeOut = new AlphaAnimation(0, 1);
-        fadeOut.setDuration(500);
+        fadeOut.setDuration(1000);
         fadeOverlay.startAnimation(fadeOut);
 
         // Step 2: Play Lottie Steam Animation and show text at the same time
@@ -226,36 +221,38 @@ public class MainActivity extends AppCompatActivity {
         fadeInText.setDuration(800);
         progressMessage.startAnimation(fadeInText);
 
-        // Step 3: Both will stay for 5 seconds
+        // Step 3: Both stay visible for 9 seconds
         steamAnimation.postDelayed(() -> {
-            // After 5 seconds, hide both steam animation and text
-            fadeOverlay.setVisibility(View.GONE);
-            steamAnimation.setVisibility(View.GONE);
-            progressMessage.setVisibility(View.GONE);
-        }, 9500);  // 5 seconds delay
+            // Step 4: Start fade-out animation for both
+            AlphaAnimation fadeOut2 = new AlphaAnimation(1, 0);
+            fadeOut2.setDuration(1000); // 1-second smooth fade-out
 
-        // Step 4: Reset Everything After Animation Completes
-        steamAnimation.addAnimatorListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                // You can handle animation start here if needed
-            }
+            // Apply fade-out to the overlay, steam, and text
+            fadeOverlay.startAnimation(fadeOut2);
+            steamAnimation.startAnimation(fadeOut2);
+            progressMessage.startAnimation(fadeOut2);
 
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                // Optionally, reset visibility if needed after animation completes
-            }
+            // Step 5: After fade-out completes, make everything disappear
+            fadeOut2.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    // No action needed at start of fade-out
+                }
 
-            @Override
-            public void onAnimationCancel(Animator animation) {
-                // Handle animation cancel (if needed)
-            }
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    fadeOverlay.setVisibility(View.GONE);
+                    steamAnimation.setVisibility(View.GONE);
+                    progressMessage.setVisibility(View.GONE);
+                }
 
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-                // Handle animation repeat (if needed)
-            }
-        });
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                    // No repeat needed
+                }
+            });
+
+        }, 9000); // 9 seconds delay before fading out
     }
 }
 
