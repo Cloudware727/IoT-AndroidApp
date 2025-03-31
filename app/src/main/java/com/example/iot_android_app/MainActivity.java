@@ -1,5 +1,6 @@
 package com.example.iot_android_app;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.animation.AlphaAnimation;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -23,6 +25,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.transition.TransitionManager;
 import androidx.transition.AutoTransition;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.example.iot_android_app.databinding.ActivityMainBinding;
 
 import org.json.JSONArray;
@@ -43,10 +46,14 @@ public class MainActivity extends AppCompatActivity {
     private TextView summaryTemperature;
     private TextView summaryHeading;
     private View myDivider;
+    private View fadeOverlay;
+    private LottieAnimationView steamAnimation;
+    private TextView progressMessage;
     private boolean isExpanded = false;
     private Handler handler = new Handler();
     private int progressUpdateInterval = 10000;
     String[] progressData = new String[6];
+    private boolean progressCompletionShowed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,8 +153,16 @@ public class MainActivity extends AppCompatActivity {
                     summaryTemperature.setText("Infuse Temperature: " + progressData[3] +"°C");
 
                     progressCard.setVisibility(View.VISIBLE);
+
+                    //show message when progress is above 90 (only once & on every time opening app)
+                    if (progressCompletionShowed == false && p>90){
+                        progressCompletionShowed = true;
+                        showCoolEffect();
+                        Toast.makeText(getBaseContext(), "Yay! Your order is almost ready", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     progressCard.setVisibility(View.GONE);
+                    progressCompletionShowed = false;
                 }
                 handler.postDelayed(this, progressUpdateInterval);
             }
@@ -186,6 +201,62 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         handler.removeCallbacksAndMessages(null);
+    }
+
+    //show animation when order is ready
+    private void showCoolEffect() {
+        fadeOverlay = findViewById(R.id.fadeOverlay);
+        steamAnimation = findViewById(R.id.steamAnimation);
+        progressMessage = findViewById(R.id.progressMessage);
+
+        // Step 1: Fade Out Background
+        fadeOverlay.setVisibility(View.VISIBLE);
+        AlphaAnimation fadeOut = new AlphaAnimation(0, 1);
+        fadeOut.setDuration(500);
+        fadeOverlay.startAnimation(fadeOut);
+
+        // Step 2: Play Lottie Steam Animation and show text at the same time
+        steamAnimation.setVisibility(View.VISIBLE);
+        progressMessage.setVisibility(View.VISIBLE);
+
+        // Play the steam animation
+        steamAnimation.playAnimation();
+
+        // Fade in the text
+        AlphaAnimation fadeInText = new AlphaAnimation(0, 1);
+        fadeInText.setDuration(800);
+        progressMessage.startAnimation(fadeInText);
+
+        // Step 3: Both will stay for 5 seconds
+        steamAnimation.postDelayed(() -> {
+            // After 5 seconds, hide both steam animation and text
+            fadeOverlay.setVisibility(View.GONE);
+            steamAnimation.setVisibility(View.GONE);
+            progressMessage.setVisibility(View.GONE);
+        }, 9500);  // 5 seconds delay
+
+        // Step 4: Reset Everything After Animation Completes
+        steamAnimation.addAnimatorListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                // You can handle animation start here if needed
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                // Optionally, reset visibility if needed after animation completes
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                // Handle animation cancel (if needed)
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+                // Handle animation repeat (if needed)
+            }
+        });
     }
 }
 

@@ -38,7 +38,7 @@ public class home_screen extends Fragment {
     private CoffeeCarouselAdapter adapter;
     private List<Coffee> coffeeList;
     private PagerSnapHelper snapHelper;
-    private int startButtonDisableThresh = 5;
+    private int startButtonDisableThresh = 10;
     private Handler handler = new Handler();
     private Runnable runnable;
     private int intervalMachineBusyCheck = 10000;
@@ -171,7 +171,7 @@ public class home_screen extends Fragment {
         });
 
         tempSlider.addOnChangeListener((slider, value, fromUser) -> {
-            int temperature = 50 + (int) value;
+            int temperature = 40 + (int) value;
             tvTempLabel.setText("Infuse Temperature: " + temperature + "°C");
             brewConfiguration.setTemperature(temperature);
         });
@@ -180,7 +180,7 @@ public class home_screen extends Fragment {
             float currentValue = tempSlider.getValue();
             if (currentValue < tempSlider.getValueTo()) {
                 tempSlider.setValue(currentValue + 1);
-                brewConfiguration.setTemperature((int) currentValue + 50 + 1);
+                brewConfiguration.setTemperature((int) currentValue + 40 + 1);
             }
         });
 
@@ -188,7 +188,7 @@ public class home_screen extends Fragment {
             float currentValue = tempSlider.getValue();
             if (currentValue > tempSlider.getValueFrom()) {
                 tempSlider.setValue(currentValue - 1);
-                brewConfiguration.setTemperature((int) currentValue + 50 - 1);
+                brewConfiguration.setTemperature((int) currentValue + 40 - 1);
             }
         });
 

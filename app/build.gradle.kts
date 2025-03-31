@@ -52,4 +52,6 @@ dependencies {
     implementation("androidx.viewpager2:viewpager2:1.0.0")
     //for notifications
     implementation("androidx.work:work-runtime-ktx:2.9.0")
+    //for animation of steam
+    implementation ("com.airbnb.android:lottie:6.0.0")
 }
