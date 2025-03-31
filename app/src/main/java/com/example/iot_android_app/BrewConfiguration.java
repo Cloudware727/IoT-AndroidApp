@@ -55,6 +55,7 @@ public class BrewConfiguration {
             String user = prefs.getString("username", "Guest");
             DBHandler dbHandler = new DBHandler();
             String response = dbHandler.sendMyOrder(coffeeId, name, sugarLevel, shotSize, temperature, user).replaceAll("\\n", "");
+            Log.e("SendOrderresponse", "send_order_response: " + response);
 
             if (activity == null) return;
 

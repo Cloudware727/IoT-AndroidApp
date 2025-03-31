@@ -158,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
                     if (progressCompletionShowed == false && p>90){
                         progressCompletionShowed = true;
                         showCoolEffect();
-                        Toast.makeText(getBaseContext(), "Yay! Your order is almost ready", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     progressCard.setVisibility(View.GONE);
