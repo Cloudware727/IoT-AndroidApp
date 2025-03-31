@@ -23,7 +23,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class DBHandler {
-    private int disableThr = 5;
+    private int disableThr = 10;
     private JSONArray settingsCache;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
