@@ -32,25 +32,24 @@ Brewsta is a mobile-first Android app (Java + Fragments) that pairs with a Raspb
 
 ## Screenshots
 
-Place the images in a `screenshots/` folder at the repo root and reference them from the README.
+| Sign up | Login |
+|---:|:---:|
+| ![Sign up](screenshots/signup.png) | ![Login](screenshots/login.png) |
 
-|                  Sign up | Login                   |
-| -----------------------: | :---------------------- |
-| `screenshots/signup.png` | `screenshots/login.png` |
+| Home / Selection | Order Summary |
+|---:|:---:|
+| ![Home](screenshots/home.png) | ![Order summary](screenshots/order_summary.png) |
 
-\| Home / Selection | Order Summary |
-\| `screenshots/home.png` | `screenshots/order_summary.png` |
+| Preparing overlay | History (no access) |
+|---:|:---:|
+| ![Preparing overlay](screenshots/ready_overlay.png) | ![History restricted](screenshots/history_restricted.png) |
 
-\| Preparing overlay | History (no access) |
-\| `screenshots/ready_overlay.png` | `screenshots/history_restricted.png` |
+| Recent orders | Settings (upload image) |
+| ![Recent orders](screenshots/recent_orders.png) | ![Settings](screenshots/settings.png) |
 
-\| Recent orders | Settings (upload image) |
-\| `screenshots/recent_orders.png` | `screenshots/settings.png` |
+| Favourites |
+| ![Favourites](screenshots/favourites.png) |
 
-\| Favourites |
-\| `screenshots/favourites.png` |
-
-*(I named each file predictably — rename or move the actual images into the screenshots folder so the links render.)*
 
 ---
 
