@@ -44,11 +44,13 @@ Brewsta is a mobile-first Android app (Java + Fragments) that pairs with a Raspb
 |---:|:---:|
 | ![Preparing overlay](screenshots/ready_overlay.png) | ![History restricted](screenshots/history_restricted.png) |
 
-| Recent orders | Settings (upload image) |
-| ![Recent orders](screenshots/recent_orders.png) | ![Settings](screenshots/settings.png) |
+| History |
+|---:|
+| ![Recent orders](screenshots/recent_orders.png) |
 
-| Favourites |
-| ![Favourites](screenshots/favourites.png) |
+| Favourites| Accounts/Settings |
+|---:|:---:|
+| ![Favourites](screenshots/favourites.png) | ![Settings](screenshots/settings.png) |
 
 
 ---
